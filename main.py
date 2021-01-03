@@ -1,6 +1,6 @@
 """Program launch module"""
-from classes.engine import Engine
+from classes.controller import Controller
 
 
 if __name__ == "__main__":
-    Engine()
+    Controller()

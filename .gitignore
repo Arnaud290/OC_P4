@@ -1,1 +1,4 @@
 /env
+
+/classes/__pycache__
+/classes/models/__pycache__        

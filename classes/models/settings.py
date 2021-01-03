@@ -6,5 +6,5 @@ NB_PLAYERS = 8
 NB_ROUNDS = 4
 # Title
 TITLE = "Welcome to the chess program !"
-#Menu
+# Menu
 MENU = "\n\n\nPRESS 1 FOR NEW TOURNAMENT"
