@@ -1,5 +1,6 @@
 """Player model module"""
 
+
 class Player:
     """Class for players"""
 
