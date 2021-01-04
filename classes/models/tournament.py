@@ -52,4 +52,4 @@ class Tournament:
         for i in range(NB_PLAYERS):
             player = Player(i)
             self.players.append(player)
-            
+      
