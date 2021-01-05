@@ -40,9 +40,53 @@ class Controller:
 
     @staticmethod
     def tournament():
-        Controller.clear()
-        tn = Tournament()
-        tn.new_tournament()
+        while True:
+            Controller.clear()
+            print(settings.NEW_TOURNAMENT_MENU)
+            choice = (input("\n\n\nChoice : "))
+            if choice not in ('0', '1',):
+                continue
+            if choice == '1':
+                tournament = Tournament()
+                serialized_tournament = {
+                                        'id': tournament.id,
+                                        'name': tournament.name,
+                                        'location': tournament.location,
+                                        'date': tournament.date,
+                                        'nb_rounds': tournament.rounds,
+                                        'nb_players': tournament.nb_tournament_players,
+                                        'id_players': tournament.players,
+                                        'time_control': tournament.time_control,
+                                        'description': tournament.description,
+                                        'nb_days': tournament.nb_days,
+                                        'start_date': tournament.date_start_tournament,
+                                        'finish_date': tournament.date_finish_tournament,
+                                        'in_progress': tournament.in_progress
+                                        }
+                print(serialized_tournament)
+                input("PRESS...")
+                SaveLoadingData.save_tournament(serialized_tournament)
+                Controller.clear()
+                print("RESUME TOURNAMENT {}\n\n".format(tournament.name))
+                tab_tournament = SaveLoadingData.load_tournament()
+                print(View.tab_view(tab_tournament))
+                input("\n\nPRESS ENTER TO CONTINUE...")
+                while True:
+                    Controller.clear()
+                    print(settings.START_TOURNAMENT_MENU)
+                    choice = (input("\n\n\nChoice : "))
+                    if choice not in ('0', '1',):
+                        continue
+                    if choice == '1':
+                        tournament.start_tournament()
+                        SaveLoadingData.save_tournament(serialized_tournament)
+                        Controller.clear()
+                        print("TOURNAMENT {} IN PROGRESS".format(tournament.name))
+                        input("\n\nPRESS ENTER TO CONTINUE...")
+                    if choice == '0':
+                        break
+            if choice == '0':
+                break
 
     @staticmethod
     def manage_players():
@@ -58,13 +102,14 @@ class Controller:
                 nb_players = SaveLoadingData.nb_players() + 1
                 while True:
                     Controller.clear()
-                    View.players_view()
+                    list_players = SaveLoadingData.load_player()
+                    print(View.tab_view(list_players))
                     try:
                         choice = int((input("\n\n\nENTER ID OF PLAYER OR 0 FOR QUIT : ")))
                     except ValueError:
                         continue
                     else:
-                        if not choice in range(0, nb_players):
+                        if choice not in range(0, nb_players):
                             continue
                         if choice == 0:
                             break
@@ -85,6 +130,9 @@ class Controller:
         while True:
             Controller.clear()
             print(settings.NEW_PLAYER_MENU)
+            print("\nLIST OF PLAYERS\n")
+            list_players = SaveLoadingData.load_player()
+            print(View.tab_view(list_players))
             choice = (input("\n\n\nChoice : "))
             if choice not in ('0', '1'):
                 continue

@@ -1,16 +1,13 @@
 """View model module"""
 from pandas import DataFrame
-from .models.save_loading_data import SaveLoadingData
 
 
 class View:
     """Class for players and tournaments views"""
     @staticmethod
-    def players_view():
-        print("LIST OF PLAYERS\n\n\n")
-        players_list = SaveLoadingData.load_player()
+    def tab_view(elements_list):
         index = []
-        for player in players_list:
+        for element in elements_list:
             index.append('')
-        tab_players = DataFrame(players_list, index=index)
-        print(tab_players)
+        tab = DataFrame(elements_list, index=index)
+        return tab
