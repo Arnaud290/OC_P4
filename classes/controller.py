@@ -48,29 +48,7 @@ class Controller:
                 continue
             if choice == '1':
                 tournament = Tournament()
-                serialized_tournament = {
-                                        'id': tournament.id,
-                                        'name': tournament.name,
-                                        'location': tournament.location,
-                                        'date': tournament.date,
-                                        'nb_rounds': tournament.rounds,
-                                        'nb_players': tournament.nb_tournament_players,
-                                        'id_players': tournament.players,
-                                        'time_control': tournament.time_control,
-                                        'description': tournament.description,
-                                        'nb_days': tournament.nb_days,
-                                        'start_date': tournament.date_start_tournament,
-                                        'finish_date': tournament.date_finish_tournament,
-                                        'in_progress': tournament.in_progress
-                                        }
-                print(serialized_tournament)
-                input("PRESS...")
-                SaveLoadingData.save_tournament(serialized_tournament)
-                Controller.clear()
-                print("RESUME TOURNAMENT {}\n\n".format(tournament.name))
-                tab_tournament = SaveLoadingData.load_tournament()
-                print(View.tab_view(tab_tournament))
-                input("\n\nPRESS ENTER TO CONTINUE...")
+                tournament.new_tournament()
                 while True:
                     Controller.clear()
                     print(settings.START_TOURNAMENT_MENU)
@@ -79,9 +57,13 @@ class Controller:
                         continue
                     if choice == '1':
                         tournament.start_tournament()
-                        SaveLoadingData.save_tournament(serialized_tournament)
                         Controller.clear()
+                        SaveLoadingData.save_tournament(tournament.serialized_tournament())
                         print("TOURNAMENT {} IN PROGRESS".format(tournament.name))
+                        
+                        
+
+
                         input("\n\nPRESS ENTER TO CONTINUE...")
                     if choice == '0':
                         break
@@ -138,14 +120,8 @@ class Controller:
                 continue
             if choice == '1':
                 player = Player()
-                serialized_player = {
-                                    'id': player.id,
-                                    'last_name': player.last_name,
-                                    'first_name': player.first_name,
-                                    'date_of_birth': player.date_of_birth,
-                                    'sex': player.sex,
-                                    'rank': player.rank
-                                    }
+                player.new_player()
+                
                 SaveLoadingData.save_player(serialized_player)
             if choice == '0':
                 break

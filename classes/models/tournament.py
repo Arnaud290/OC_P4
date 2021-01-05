@@ -1,5 +1,7 @@
 """Tournament model module"""
-from datetime import date
+import locale
+locale.setlocale(locale.LC_TIME,'')
+import time
 import os
 from .settings import NB_PLAYERS, NB_ROUNDS
 from .save_loading_data import SaveLoadingData
@@ -9,7 +11,6 @@ from ..view import View
 class Tournament:
     """Class for tournaments"""
     def __init__(self):
-        time = date.today()
         self.id = SaveLoadingData.nb_tournaments() + 1
         self.name = ""
         self.location = ""
@@ -22,8 +23,7 @@ class Tournament:
         self.nb_days = 1
         self.date_start_tournament = ''
         self.date_finish_tournament = ''
-        self.in_progress = "false"
-        self.new_tournament()
+        self.in_progress = False
 
     @staticmethod
     def clear():
@@ -109,7 +109,7 @@ class Tournament:
                 Tournament.clear()
                 print("LIST OF ACTUALS PLAYERS\n")
                 print(View.tab_view(total_players))
-                print("\n\nTOURNEMANT PLAYERS LIST")
+                print("\n\nTOURNAMENT PLAYERS LIST")
                 if Tournament_players:
                     print(View.tab_view(Tournament_players))
                 id_player = input("ENTER ID OF PLAYER {} : ".format(i))
@@ -127,11 +127,42 @@ class Tournament:
                             test = False
 
     def start_tournament(self):
-        time = date.today()
         self.date_start_tournament = time.strftime("%d/%m/%Y %H:%M:%S")
-        self.in_progress = "true"
+        self.in_progress = True
 
     def end_tournament(self):
-        time = date.today()
         self.date_finish_tournament = time.strftime("%d/%m/%Y %H:%M:%S")
-        self.in_progress = "false"
+        self.in_progress = False
+
+    def serialized_tournament(self):
+        serialized_tournament = {
+                        'id': self.id,
+                        'name': self.name,
+                        'location': self.location,
+                        'date': self.date,
+                        'nb_rounds': self.rounds,
+                        'nb_players': self.nb_tournament_players,
+                        'id_players': self.players,
+                        'time_control': self.time_control,
+                        'description': self.description,
+                        'nb_days': self.nb_days,
+                        'start_date': self.date_start_tournament,
+                        'finish_date': self.date_finish_tournament,
+                        'in_progress': self.in_progress
+                        }
+        return serialized_tournament
+
+    def unserialized_tournament(self, tab_tournament):
+        unserialized_tournament = tab_tournament[-1]
+        self.id = unserialized_tournament['id']
+        self.name =  unserialized_tournament['name']
+        self.location = unserialized_tournament['location']
+        self.date = unserialized_tournament['date']
+        self.rounds = unserialized_tournament['nb_rounds']
+        self.nb_tournament_players = unserialized_tournament['nb_players']
+        self.players = unserialized_tournament['id_players']
+        self.time_control = unserialized_tournament['time_control']
+        self.nb_days = unserialized_tournament['nb_days']
+        self.date_start_tournament = unserialized_tournament['start_date']
+        self.date_finish_tournament = unserialized_tournament['finish_date']
+        self.in_progress= unserialized_tournament['in_progress':]                

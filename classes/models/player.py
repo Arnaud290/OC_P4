@@ -12,7 +12,6 @@ class Player:
         self.date_of_birth = ""
         self.sex = ""
         self.rank = 0
-        self.new_player()
 
     def new_player(self):
         """player information instance method"""
@@ -30,3 +29,15 @@ class Player:
             else:
                 self.rank = abs(rank)
                 break
+
+    def serialized_player(self):
+        serialized_player = {
+                            'id': self.id,
+                            'last_name': self.last_name,
+                            'first_name': self.first_name,
+                            'date_of_birth': self.date_of_birth,
+                            'sex': self.sex,
+                            'rank': self.rank
+                            }
+        return serialized_player
+    
