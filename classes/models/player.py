@@ -5,13 +5,15 @@ from .save_loading_data import SaveLoadingData
 class Player:
     """Class for players"""
 
-    def __init__(self):
-        self.id = SaveLoadingData.nb_players() + 1
+    def __init__(self, id, id_tournament):
+        self.id = id
         self.last_name = ""
         self.first_name = ""
         self.date_of_birth = ""
         self.sex = ""
         self.rank = 0
+        self.weight = 0
+        self.id_tournament = id_tournament
 
     def new_player(self):
         """player information instance method"""
@@ -37,7 +39,8 @@ class Player:
                             'first_name': self.first_name,
                             'date_of_birth': self.date_of_birth,
                             'sex': self.sex,
-                            'rank': self.rank
+                            'rank': self.rank,
+                            'id_tournament': self.id_tournament
                             }
         return serialized_player
     

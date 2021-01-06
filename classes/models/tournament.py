@@ -5,7 +5,9 @@ import time
 import os
 from .settings import NB_PLAYERS, NB_ROUNDS
 from .save_loading_data import SaveLoadingData
+from .player import Player
 from ..view import View
+from .round import Round
 
 
 class Tournament:
@@ -38,7 +40,7 @@ class Tournament:
         self.description = input("Tournament description : ")
         self.nb_rounds()
         self.nb_players()
-        self.select_players()
+        self.create_players()
 
     def select_time_control(self):
         """Instance method that defines the type of time control"""
@@ -90,17 +92,26 @@ class Tournament:
                     input("The number must be valid. Press ENTER ...")
                     continue
                 else:
-                    if abs(nb) >= 2:
+                    if nb >= 2 and nb % 2 == 0:
                         self.nb_tournament_players = nb
                         break
                     else:
-                        input("The number of players must be at least 2. Press ENTER ...")
+                        input("The number of players must be at least 2 and by pairs. Press ENTER ...")
                         continue
             else:
                 break
 
+    def create_players(self):
+        for i in range(self.nb_tournament_players):
+            print("\n\nFOR PLAYER {} :\n".format(i + 1))
+            player = Player(i, self.id)
+            player.new_player()
+            self.players.append(player)
+            SaveLoadingData.save_player(player.serialized_player())
+
+    """
     def select_players(self):
-        """Instance method that define list of players"""
+        """"""Instance method that define list of players""""""
         total_players = SaveLoadingData.load_player()
         Tournament_players = []
         for i in range(1, self.nb_tournament_players + 1):
@@ -125,10 +136,13 @@ class Tournament:
                             Tournament_players.append(element)
                             total_players.remove(element)
                             test = False
-
+    """
     def start_tournament(self):
         self.date_start_tournament = time.strftime("%d/%m/%Y %H:%M:%S")
         self.in_progress = True
+        SaveLoadingData.save_tournament(self.serialized_tournament())
+        tr_rounds = Round(self.players, self.rounds)
+        tr_rounds.rounds()
 
     def end_tournament(self):
         self.date_finish_tournament = time.strftime("%d/%m/%Y %H:%M:%S")
@@ -142,7 +156,6 @@ class Tournament:
                         'date': self.date,
                         'nb_rounds': self.rounds,
                         'nb_players': self.nb_tournament_players,
-                        'id_players': self.players,
                         'time_control': self.time_control,
                         'description': self.description,
                         'nb_days': self.nb_days,
