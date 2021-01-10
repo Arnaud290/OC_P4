@@ -1,6 +1,16 @@
 """base view module"""
+import os
 
 
 class View:
     """General view class"""
-    pass
+    def __init__(self):
+        self.choice = ''
+
+    def get_choice(self):
+        self.choice = input("choice :")
+        return self.choice
+
+    @staticmethod
+    def clear():
+        os.system('cls' if os.name  == 'nt' else 'clear')
