@@ -1,5 +1,11 @@
 /env
-
 /classes/__pycache__
-/classes/models/__pycache__        
-db.json
+/classes/models/__pycache__
+/app/config/__pycache__/*
+/app/controllers/__pycache__/*
+/app/views/__pycache__/*
+/app/models/__pycache__/*
+/app/database/db.json
+
+        
+
