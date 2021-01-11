@@ -6,6 +6,7 @@ import time
 class TournamentModel(model.Model):
     """Tournament model class"""
     def __init__(self, name, location, nb_players, nb_rounds, time_control, description):
+        self.id = get_number()
         self.name = ""
         self.location = ""
         self.date = time.strftime("%d/%m/%Y")
