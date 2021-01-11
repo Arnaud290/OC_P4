@@ -37,14 +37,14 @@ class Model:
     def delete(self):
         """delete instance with id"""
         table = self.db.table(self.__class__.__name__)
-        q = Query() 
-        table.remove(q.id == self.id)
+        query = Query() 
+        table.remove(query.id == self.id)
 
     def update(self, key, value):
+        """update value into db"""
         table = self.db.table(self.__class__.__name__)
-        model = Query()
-        table.search(model.id == self.id)
-        table.update({key: value})
+        query = Query()
+        table.update({key: value}, query.id == self.id)
 
     @classmethod
     def get_number(cls):
