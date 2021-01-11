@@ -46,10 +46,10 @@ class Model:
         table.search(model.id == self.id)
         table.update({key: value})
 
-
-    def get_number(self):
+    @classmethod
+    def get_number(cls):
         """get numbers of instances model saved"""
-        number = self.get()
-        number = len(number)
+        table = cls.db.table(cls.__name__)
+        number = len(table)
         return number
 
