@@ -26,6 +26,7 @@ class MainMenuControl(controller.Controller):
             if user_choice == '1':
                 pass
             if user_choice == '2':
-                pass
+                controller  = manage_player_control.ManagePlayerControl()
+                controller()
             if user_choice == 'q' or 'Q':
                 break

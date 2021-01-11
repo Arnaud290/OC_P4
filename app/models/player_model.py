@@ -1,5 +1,5 @@
 """player model module"""
-from model import Model
+from .model import Model
 
 
 class PlayerModel(Model):
@@ -16,5 +16,4 @@ class PlayerModel(Model):
         self.tournament_list = ''
         if attributs:
             for attr_name, attr_value in attributs.items():
-                print(attr_value)
                 setattr(self, attr_name, attr_value)
