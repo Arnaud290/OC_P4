@@ -1,20 +1,22 @@
 """tournament model module"""
-from . import model
+from .model import Model
 import time
 
 
-class TournamentModel(model.Model):
+class TournamentModel(Model):
     """Tournament model class"""
-    def __init__(self, name, location, nb_players, nb_rounds, time_control, description):
-        self.id = get_number()
-        self.name = ""
-        self.location = ""
+    def __init__(self, **attributs):
+        self.id = self.get_number()
+        self.name = None
+        self.location = None
         self.date = time.strftime("%d/%m/%Y")
-        self.nb_players = nb_players
-        self.nb_rounds = nb_rounds
+        self.nb_players = None
+        self.nb_rounds = None
         self.round_list = []
         self.player_list = []
-        self.time_control = time_control
-        self.description = description
+        self.time_control = None
+        self.description = None
         self.in_progress = False
-
+        if attributs:
+            for attr_name, attr_value in attributs.items():
+                setattr(self, attr_name, attr_value)

@@ -7,23 +7,31 @@ class MenuView(view.View):
     pass
 
     def __init__(self):
-        self._entries = {}
         self._title = ''
+        self._entries = []
+        self.key = 1
 
     def add_title_menu(self, title):
-        self._title = title
-
-
-    def add_menu_line(self, key, option):
-        self._entries[str(key)] = option
-
-    def display_menu(self):
+        """value for title menu"""
         self.clear()
+        self._title = title
+        stars = '*'*len(self._title)
+        print()
+        print(stars)
         print(self._title)
-        print("\n\n")
-        for key, option in self._entries.items():
-            print("{}: {}".format(key, option))
-            print()
+        print(stars)
+        print()
 
+    def add_menu_line(self, value):
+        """options and values for menu lines"""
+        print("{} : {}".format(self.key, value)) 
+        print()
+        self.key += 1
+
+    def choice_menu(self):
+        print()
         choice = self.get_choice()
         return choice
+
+    def quit(self):
+        self.clear()

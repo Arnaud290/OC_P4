@@ -4,7 +4,7 @@ from .model import Model
 
 class PlayerModel(Model):
     """Player model class"""
-    def __init__(self, *args, **attributs):
+    def __init__(self, **attributs):
     
         self.id = ''
         self.first_name = ''

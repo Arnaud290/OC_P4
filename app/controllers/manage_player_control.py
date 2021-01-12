@@ -69,7 +69,7 @@ class ManagePlayerControl(controller.Controller):
         while True:
 
 
-        self.view_controller.display_players_table(self.player_list())
+            self.view_controller.display_players_table(self.player_list())
         while True: 
             id_player = self.view_controller.get_info_player("Enter player id or 'Q' for quit: ").upper()
             if id_player == 'Q':
