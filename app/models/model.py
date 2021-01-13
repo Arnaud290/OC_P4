@@ -1,6 +1,7 @@
 """ general model module"""
 from tinydb import TinyDB, Query
-
+import types
+import sys
 
 class Model:
     """general model class"""
@@ -15,18 +16,18 @@ class Model:
         table.insert(self.__dict__)
 
     @classmethod
-    def get(cls):
+    def get_serialized(cls):
         """get all instances model"""
         table = cls.db.table(cls.__name__)
         serialized_table = table.all()
         return serialized_table
 
     @classmethod
-    def get_id(cls, id):
+    def get_id_serialized(cls, player_id):
         """get instance with id"""
         table = cls.db.table(cls.__name__)
         serialized_table = table.all()
-        return serialized_table[id]
+        return serialized_table[player_id]
 
     @classmethod
     def delete_all(cls):

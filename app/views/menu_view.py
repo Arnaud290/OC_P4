@@ -9,7 +9,7 @@ class MenuView(view.View):
     def __init__(self):
         self._title = ''
         self._entries = []
-        self.key = 1
+        self.key = None
 
     def add_title_menu(self, title):
         """value for title menu"""
@@ -21,6 +21,7 @@ class MenuView(view.View):
         print(self._title)
         print(stars)
         print()
+        self.key = 1
 
     def add_menu_line(self, value):
         """options and values for menu lines"""

@@ -12,7 +12,7 @@ class Controller:
     def players_list():
         """return list of objects players""" 
         player_list = []
-        serialized_players = models.player_model.PlayerModel.get()
+        serialized_players = models.player_model.PlayerModel.get_serialized()
         for serialized_player in serialized_players:
             player = models.player_model.PlayerModel(**serialized_player)
             player_list.append(player)
@@ -22,8 +22,10 @@ class Controller:
     def tournaments_list():
         """return list of objects tournaments""" 
         tournaments_list = []
-        serialized_tournaments = models.tournament_model.TournamentModel.get()
+        serialized_tournaments = models.tournament_model.TournamentModel.get_serialized()
         for serialized_tournament in serialized_tournaments:
             tournament = models.tournament_model.TournamentModel(**serialized_tournament)
             tournaments_list.append(tournament)
         return tournaments_list
+
+    

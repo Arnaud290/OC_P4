@@ -8,7 +8,7 @@ class View:
         self.choice = ''
 
     def get_choice(self):
-        self.choice = input("choice : ")
+        self.choice = input(">> ")
         return self.choice
 
     @staticmethod
