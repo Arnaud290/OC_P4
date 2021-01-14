@@ -10,7 +10,7 @@ class NewTournamentView(View):
         self.tab = None
 
     def request(self, question):
-        """ask questions"""
+        """ask questions method"""
         print()
         print(question)
         print()
@@ -18,20 +18,25 @@ class NewTournamentView(View):
         return choice
 
     def tab_view(self, title, elements_list):
+        """table view method"""
         print()
         print(title)
+        print('_'*(len(title)))
         print()
         index = []
         for element in elements_list:
             index.append('')
-        self.tab = DataFrame(elements_list, index=index, columns = ['id', 'first_name', 'last_name', 'sex', 'rank'])
+        self.tab = DataFrame(elements_list, index=index, columns=['id', 'first_name', 'last_name', 'sex', 'rank'])
         if elements_list:
             print(self.tab)
         print()
+        print()
 
     def indication(self, indication):
+        """display indications method"""
+        print()
         print(indication)
 
     def pause(self):
+        """display pause method"""
         input("\nPress enter to continue")
-

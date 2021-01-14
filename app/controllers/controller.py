@@ -10,7 +10,7 @@ class Controller:
 
     @staticmethod
     def players_list():
-        """return list of objects players""" 
+        """return list of objects players"""
         player_list = []
         serialized_players = models.player_model.PlayerModel.get_serialized()
         for serialized_player in serialized_players:
@@ -20,12 +20,10 @@ class Controller:
 
     @staticmethod
     def tournaments_list():
-        """return list of objects tournaments""" 
+        """return list of objects tournaments"""
         tournaments_list = []
         serialized_tournaments = models.tournament_model.TournamentModel.get_serialized()
         for serialized_tournament in serialized_tournaments:
             tournament = models.tournament_model.TournamentModel(**serialized_tournament)
             tournaments_list.append(tournament)
         return tournaments_list
-
-    

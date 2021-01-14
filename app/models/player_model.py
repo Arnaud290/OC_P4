@@ -5,7 +5,6 @@ from .model import Model
 class PlayerModel(Model):
     """Player model class"""
     def __init__(self, **attributs):
-    
         self.id = ''
         self.first_name = ''
         self.last_name = ''

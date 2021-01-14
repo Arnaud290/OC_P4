@@ -4,8 +4,6 @@ from . import view
 
 class MenuView(view.View):
     """Menu view class"""
-    pass
-
     def __init__(self):
         self._title = ''
         self._entries = []
@@ -25,14 +23,16 @@ class MenuView(view.View):
 
     def add_menu_line(self, value):
         """options and values for menu lines"""
-        print("{} : {}".format(self.key, value)) 
+        print("{} : {}".format(self.key, value))
         print()
         self.key += 1
 
     def choice_menu(self):
+        """user select choice method"""
         print()
         choice = self.get_choice()
         return choice
 
     def quit(self):
+        """screen quit method"""
         self.clear()

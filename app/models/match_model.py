@@ -1,8 +1,8 @@
 """match model module"""
-from. import model
+from.model import Model
 
 
-class MatchModel(model.Model):
+class MatchModel(Model):
     """match model class"""
     def __init__(self, player1, player2):
         self.id = self.get_number()

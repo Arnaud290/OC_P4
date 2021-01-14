@@ -1,7 +1,6 @@
 """ general model module"""
 from tinydb import TinyDB, Query
-import types
-import sys
+
 
 class Model:
     """general model class"""
@@ -34,11 +33,11 @@ class Model:
         """delete all instances model"""
         table = cls.db.table(cls.__name__)
         table.truncate()
-    
+
     def delete(self):
-        """delete instance with id"""
+        """delete instance model"""
         table = self.db.table(self.__class__.__name__)
-        query = Query() 
+        query = Query()
         table.remove(query.id == self.id)
 
     def update(self, key, value):
@@ -53,4 +52,3 @@ class Model:
         table = cls.db.table(cls.__name__)
         number = len(table)
         return number
-

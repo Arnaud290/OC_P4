@@ -8,9 +8,11 @@ class View:
         self.choice = ''
 
     def get_choice(self):
+        """user get choice method"""
         self.choice = input(">> ")
         return self.choice
 
     @staticmethod
     def clear():
-        os.system('cls' if os.name  == 'nt' else 'clear')
+        """clear screen method"""
+        os.system('cls' if os.name == 'nt' else 'clear')

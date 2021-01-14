@@ -1,7 +1,7 @@
 """rapport view module"""
-from . import view
+from .view import View
 
 
-class RapportView(view.View):
+class RapportView(View):
     """Rapport view class"""
     pass
