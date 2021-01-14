@@ -2,9 +2,9 @@
 from.model import Model
 
 
-class MatchModel(Model):
+class RoundModel(Model):
     """round model class"""
-    def __init__(self, player1, player2):
+    def __init__(self,):
         self.id = self.get_number()
         self.matchs_list = []
         self.end = False

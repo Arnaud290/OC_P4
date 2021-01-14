@@ -5,14 +5,14 @@ from .model import Model
 class PlayerModel(Model):
     """Player model class"""
     def __init__(self, **attributs):
-        self.id = ''
-        self.first_name = ''
-        self.last_name = ''
-        self.birth_date = ''
-        self.sex = ''
-        self.rank = ''
-        self.tournament_points = ''
-        self.tournament_list = ''
+        self.id = None
+        self.first_name = None
+        self.last_name = None
+        self.birth_date = None
+        self.sex = None
+        self.rank = None
+        self.tournament_points = None
+        self.tournament_list = None
         if attributs:
             for attr_name, attr_value in attributs.items():
                 setattr(self, attr_name, attr_value)

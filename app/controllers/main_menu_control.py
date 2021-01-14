@@ -1,6 +1,7 @@
 """main menu control module"""
 from .controller import Controller
-from . import new_tournament_control
+from .new_tournament_control import NewTournamentControl
+from .rounds_control import RoundsControl
 from ..views import menu_view
 
 
@@ -19,10 +20,16 @@ class MainMenuControl(Controller):
         if self.actual_tournaments_list:
             if self.actual_tournaments_list[-1].in_progress:
                 self.menu.add_menu_line("Continue Tournament")
+                if self.actual_tournaments_list[-1].round_list:
+                    self.control = RoundsControl()
+                else:
+                   self.control = NewTournamentControl()
             else:
                 self.menu.add_menu_line("New Tournament")
+                self.control = NewTournamentControl()
         else:
             self.menu.add_menu_line("New Tournament")
+            self.control = NewTournamentControl()
         self.menu.add_menu_line("Rapports")
         self.menu.add_menu_line("Quit")
         self.select = self.menu.choice_menu()
@@ -31,7 +38,6 @@ class MainMenuControl(Controller):
             self.control()
         else:
             if self.select == '1':
-                self.control = new_tournament_control.NewTournamentControl()
                 self.control()
             if self.select == '2':
                 pass

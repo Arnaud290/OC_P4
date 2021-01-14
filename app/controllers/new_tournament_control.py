@@ -3,6 +3,8 @@ from . import controller
 from . import main_menu_control
 from ..models.tournament_model import TournamentModel
 from ..models.player_model import PlayerModel
+from ..models.round_model import RoundModel
+from .rounds_control import RoundsControl
 from ..views import menu_view, new_tournament_view
 from ..config import settings
 
@@ -227,9 +229,15 @@ class NewTournamentControl(controller.Controller):
                     if choice not in ('Y', 'N'):
                         continue
                     if choice == 'Y':
+                        for nb_rounds in range(self.tournament.nb_rounds):
+                            round_game = RoundModel()
+                            round_game.id_tourament = self.tournament.id
+                            self.tournament.round_list.append(round_game.id)
+                            round_game.save()
                         self.tournament.in_progress = True
                         self.tournament.save()
-                        pass
+                        self.control = RoundsControl()
+                        self.control()
                     if choice == 'N':
                         break
             if choice == '6':
