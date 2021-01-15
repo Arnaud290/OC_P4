@@ -122,7 +122,7 @@ class NewTournamentControl(Controller):
                 self.control.create_player()
             if choice == '2':
                 self.control = ManagePlayerControl()
-                self.control.modify_player()
+                self.control.modify_player(players_model)
             if choice == '3':
                 while True:
                     id_player = self.view.request("Enter player id to add or Q for quit:").upper()

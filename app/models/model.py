@@ -22,11 +22,11 @@ class Model:
         return serialized_table
 
     @classmethod
-    def get_id_serialized(cls, player_id):
+    def get_id_serialized(cls, select_id):
         """get instance with id"""
         table = cls.db.table(cls.__name__)
         serialized_table = table.all()
-        return serialized_table[player_id]
+        return serialized_table[select_id]
 
     @classmethod
     def delete_all(cls):

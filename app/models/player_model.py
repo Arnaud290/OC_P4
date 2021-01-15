@@ -11,8 +11,9 @@ class PlayerModel(Model):
         self.birth_date = None
         self.sex = None
         self.rank = None
-        self.tournament_points = None
+        self.tournament_points = 0.0
         self.tournament_list = None
+        self.play_with_list = []
         if attributs:
             for attr_name, attr_value in attributs.items():
                 setattr(self, attr_name, attr_value)

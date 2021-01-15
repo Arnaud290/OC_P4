@@ -1,7 +1,7 @@
 """rapport control module"""
-from . import controller
+from .controller import Controller
 
 
-class RapportControl(controller.Controller):
+class RapportControl(Controller):
     """Rapport control class"""
     pass

@@ -14,12 +14,12 @@ class ManagePlayerControl(Controller):
     def __call__(self):
         self.select = ''
         self.control = None
-        self.actual_tournaments_list = self.tournaments_list()
         self.manage_player_menu()
 
     def manage_player_menu(self):
         """Manage player menu method"""
         while True:
+            self.actual_players_list = self.players_list()
             tab_players_list = PlayerModel.get_serialized()
             self.view.add_title_menu("MANAGE PLAYERS")
             elements_columns = ['id', 'first_name', 'last_name', 'birth_date' ,'sex', 'rank']
@@ -34,10 +34,8 @@ class ManagePlayerControl(Controller):
             else:
                 if self.select == '1':
                     self.create_player()
-
                 if self.select == '2':
-                    self.modify_player()
-
+                    self.modify_player(self.actual_players_list)
                 if self.select == '3':
                     break
         self.control = main_menu_control.MainMenuControl()
@@ -65,9 +63,9 @@ class ManagePlayerControl(Controller):
                 continue
         player.save()
             
-    def modify_player(self):
+    def modify_player(self, players_model):
         """Manage player method"""
-        players_model = self.players_list()
+    
         while True:
             id_player = self.view.request("Enter player id or Q for quit:").upper()
             if id_player == 'Q':
