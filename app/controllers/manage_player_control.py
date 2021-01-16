@@ -7,7 +7,6 @@ from ..views.view import View
 
 class ManagePlayerControl(Controller):
     """Manage player control class"""
-    
     def __init__(self):
         self.view = View()
 

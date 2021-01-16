@@ -8,7 +8,6 @@ from ..views.view import View
 
 class MainMenuControl(Controller):
     """main menu control class"""
-
     def __call__(self):
         self.select = ''
         self.actual_tournaments_list = self.tournaments_list()

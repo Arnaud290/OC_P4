@@ -5,11 +5,10 @@ from .model import Model
 class MatchModel(Model):
     """match model class"""
     def __init__(self, **attributs):
+        self.match_nb = None
         self.id = self.get_number()
-        self.player1_id = None
-        self.player2_id = None
-        self.player1_name = ''
-        self.player2_name = ''
+        self.p1_id = None
+        self.p2_id = None
         self.result = ''
         self.finish = False
         self.id_round = ''
