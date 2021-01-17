@@ -9,4 +9,4 @@
 /app/views/__pycache__/*
 /app/models/__pycache__
 /app/models/__pycache__/*
-/app/database/db.json
+/app/database/*.json

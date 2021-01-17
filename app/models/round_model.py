@@ -4,14 +4,18 @@ from.model import Model
 
 class RoundModel(Model):
     """round model class"""
-    round_count = 0
     def __init__(self, **attributs):
-        RoundModel.round_count += 1
         self.id = self.get_number()
+        self.match_nb = 0
         self.matchs_list = []
-        self.in_progress = False
+        self.start = False
+        self.finish = False
         self.id_tourament = ''
-        self.count = RoundModel.round_count
+        self.count = 0
+        self.name = None
+        self.date_start = None
+        self.Date_finish = None
+        self.finish_matchs = []
         if attributs:
             for attr_name, attr_value in attributs.items():
                 setattr(self, attr_name, attr_value)

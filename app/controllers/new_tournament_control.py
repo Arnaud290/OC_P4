@@ -109,9 +109,9 @@ class NewTournamentControl(Controller):
             self.view.tab_view("List of players to add", tab_players_list, elements_columns)
             self.view.tab_view("List of players in tournament", tab_tournament_players, elements_columns)
             self.view.add_menu_line("Create Player")
-            self.view.add_menu_line("modify player")
+            self.view.add_menu_line("Modify player")
             self.view.add_menu_line("Select player for tournament")
-            self.view.add_menu_line("delete tournament player")
+            self.view.add_menu_line("Delete tournament player")
             self.view.add_menu_line("Start Tournament")
             self.view.add_menu_line("Quit")
             choice = self.view.get_choice()
@@ -165,17 +165,23 @@ class NewTournamentControl(Controller):
                     if choice not in ('Y', 'N'):
                         continue
                     if choice == 'Y':
+                        rounds_nb = 1
                         for nb_rounds in range(self.tournament.nb_rounds):
                             round_game = RoundModel()
                             round_game.id_tourament = self.tournament.id
+                            round_game.count = rounds_nb
+                            round_game.name = 'Round ' + str(rounds_nb)  
                             self.tournament.round_list.append(round_game.id)
                             round_game.save()
+                            rounds_nb += 1
                         self.tournament.in_progress = True
                         self.tournament.save()
                         self.control = RoundsControl()
-                        self.control()
-                    if choice == 'N':
                         break
+                    if choice == 'N':
+                        self.control = ManagePlayerControl()
+                        break
+                self.control()
             if choice == '6':
                 choice = self.view.request("quit by deleting the tournament? (Y or N)").upper()
                 if choice not in ('Y', 'N'):
