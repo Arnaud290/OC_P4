@@ -1,5 +1,6 @@
 """match control module"""
 import time
+import operator
 from .controller import Controller
 from . import main_menu_control
 from ..views.view import View
@@ -16,6 +17,7 @@ class RoundsControl(Controller):
         self.view = View()
         self.control = None
         self.rounds = None
+        self.delete_tournament = False
         self.rounds_engine()
             
     def tournament_players_list(self):
@@ -47,7 +49,31 @@ class RoundsControl(Controller):
                     self.rounds_menu()    
                 if self.rounds.start and not self.rounds.finish:
                     self.rounds_menu() 
-        self.control = main_menu_control.MainMenuControl()  
+        if not t_rounds and not self.delete_tournament:
+            title_menu = "Tournament : {} is finish !".format(self.tournament.name)
+            self.view.add_title_menu(title_menu)
+            t_players = self.tournament_players_list()
+            tab_t_players = []
+            for player in t_players:
+                tab_t_players.append(PlayerModel.get_id_serialized(player.id))
+            elements_columns = ['id', 'first_name', 'last_name', 'tournament_points', 'rank']
+            self.view.tab_view("Tournament Players", tab_t_players, elements_columns)
+            for player in t_players:
+                 player.tournament_points = 0.0
+                 player.update('tournament_points', player.tournament_points)
+            self.tournament.in_progress = False
+            self.tournament.update('in_progress', self.tournament.in_progress)
+            self.view.pause()
+        if self.delete_tournament:
+            t_players = self.tournament_players_list()
+            t_rounds = self.tournament_rounds_list()
+            for rounds in t_rounds:
+                rounds.delete()
+            self.tournament.delete()
+            for player in t_players:
+                player.tournament_points = 0.0
+                player.update('tournament_points', player.tournament_points)
+            self.control = main_menu_control.MainMenuControl()  
         self.control()
 
     def rounds_tab(self):
@@ -57,7 +83,7 @@ class RoundsControl(Controller):
         t_players = self.tournament_players_list()
         for player in t_players:
             tab_t_players.append(PlayerModel.get_id_serialized(player.id))
-        elements_columns = ['id', 'first_name', 'last_name', 'tournament_points', 'rank']
+        elements_columns = ['tournament_points', 'rank', 'first_name', 'last_name', 'id']
         self.view.tab_view("Tournament Players", tab_t_players, elements_columns)     
         tab_r_matchs = []
         match_nb = 1
@@ -124,10 +150,7 @@ class RoundsControl(Controller):
                 if choice not in ('Y', 'N'):
                     continue
                 if choice == 'Y':
-                    self.tournament.delete()
-                    t_rounds = self.tournament_rounds_list()
-                    for rounds in t_rounds:
-                        rounds.delete()
+                    self.delete_tournament = True
                     self.in_progress = False
                     break
                 if choice == 'N':
@@ -136,41 +159,63 @@ class RoundsControl(Controller):
                    
     def create_rounds_matchs(self):
         """create matchs round method"""
-        players_for_match =  self.tournament_players_list()
+        p_match = self.tournament_players_list()
         if self.rounds.count == 1:
-            players_for_match.sort(key=lambda x: x.rank, reverse=True)
-            while players_for_match:
-                middle = int(len(players_for_match)/2)
-                match = ([players_for_match[0].id, 0], [players_for_match[middle].id, 0])
+            p_match.sort(key=lambda x: x.rank, reverse=True)
+            while p_match:
+                middle = int(len(p_match)/2)
+                match = ([p_match[0].id, 0], [p_match[middle].id, 0])
                 self.rounds.matchs_list.append(match)
                 self.rounds.update('matchs_list', self.rounds.matchs_list)
-                players_for_match[0].vs.append(players_for_match[middle].id)
-                players_for_match[0].update('vs', players_for_match[0].vs)
-                players_for_match[middle].vs.append(players_for_match[0].id)
-                players_for_match[middle].update('vs', players_for_match[middle].vs)
-                del players_for_match[0]
+                p_match[0].vs.append(p_match[middle].id)
+                p_match[0].update('vs', p_match[0].vs)
+                p_match[middle].vs.append(p_match[0].id)
+                p_match[middle].update('vs', p_match[middle].vs)
+                del p_match[0]
                 try:
-                    del players_for_match[middle - 1]
+                    del p_match[middle - 1]
                 except IndexError:
-                     del players_for_match[0]
-        else:
-            players_for_match.sort(key=lambda x: x.tournament_points, reverse=True)
-            while players_for_match:
+                     del p_match[0]
+        if self.rounds.count % 2 == 0:
+            p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
+            while p_match:
                 player = 1
                 end_list = 1
-                while players_for_match[0].id in players_for_match[player].vs:
+                while p_match[0].id in p_match[player].vs:
                     player += 1
                     end_list += 1
-                match = ([players_for_match[0].id, 0], [players_for_match[player].id, 0])
+                match = ([p_match[0].id, 0], [p_match[player].id, 0])
                 self.rounds.matchs_list.append(match)
+                p_match[0].vs.append(p_match[player].id)
+                p_match[0].update('vs', p_match[0].vs)
+                p_match[player].vs.append(p_match[0].id)
+                p_match[player].update('vs', p_match[player].vs)
+                del p_match[0]
+                del p_match[player - end_list]  
+            self.rounds.update('matchs_list', self.rounds.matchs_list)
+        if self.rounds.count % 2 != 0 and self.rounds.count != 1:
+            p_match = self.tournament_players_list()
+            p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=False)
+            while p_match:
+                player = 1
+                end_list = 1  
+                while p_match:
+                    player = 1
+                    end_list = 1
+                    while p_match[0].id in p_match[player].vs:
+                        player += 1
+                        end_list += 1
+                    match = ([p_match[0].id, 0], [p_match[player].id, 0])
+                    self.rounds.matchs_list.append(match)
+                    p_match[0].vs.append(p_match[player].id)
+                    p_match[0].update('vs', p_match[0].vs)
+                    p_match[player].vs.append(p_match[0].id)
+                    p_match[player].update('vs', p_match[player].vs)
+                    del p_match[0]
+                    del p_match[player - end_list]  
+                    self.rounds.matchs_list.reverse()
                 self.rounds.update('matchs_list', self.rounds.matchs_list)
-                players_for_match[0].vs.append(players_for_match[player].id)
-                players_for_match[0].update('vs', players_for_match[0].vs)
-                players_for_match[player].vs.append(players_for_match[0].id)
-                players_for_match[player].update('vs', players_for_match[player].vs)
-                del players_for_match[0]
-                del players_for_match[player - end_list]
-       
+
     def match_management(self, match_nb, result):
         """match management method"""
         t_players = self.tournament_players_list()
