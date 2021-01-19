@@ -63,6 +63,7 @@ class RoundsControl(Controller):
                  player.update('tournament_points', player.tournament_points)
             self.tournament.in_progress = False
             self.tournament.update('in_progress', self.tournament.in_progress)
+            self.control = main_menu_control.MainMenuControl() 
             self.view.pause()
         if self.delete_tournament:
             t_players = self.tournament_players_list()
@@ -70,10 +71,14 @@ class RoundsControl(Controller):
             for rounds in t_rounds:
                 rounds.delete()
             self.tournament.delete()
-            for player in t_players:
+            self.control = main_menu_control.MainMenuControl()  
+        for player in t_players:
                 player.tournament_points = 0.0
                 player.update('tournament_points', player.tournament_points)
-            self.control = main_menu_control.MainMenuControl()  
+                player.tournament_weight = 0
+                player.update('tournament_weight', player.tournament_weight)
+                player.vs = []
+                player.update('vs', player.vs)
         self.control()
 
     def rounds_tab(self):
@@ -159,63 +164,55 @@ class RoundsControl(Controller):
                    
     def create_rounds_matchs(self):
         """create matchs round method"""
+        t_players_id = []
         p_match = self.tournament_players_list()
         if self.rounds.count == 1:
-            p_match.sort(key=lambda x: x.rank, reverse=True)
+            p_match.sort(key=operator.attrgetter('rank'), reverse=True) 
+        else:
+             p_match.sort(key=operator.attrgetter('tournament_weight'), reverse=True) 
+        for player in p_match:
+            t_players_id.append(player.id)
+        for player in p_match:
+            player.no_vs = []
+            for id_player in t_players_id:
+                if player.id != id_player and id_player not in player.vs:
+                    player.no_vs.append(id_player)
+            player.update('no_vs', player.no_vs)
+        if self.rounds.count == 1:
+            weight = self.tournament.nb_players
+            for player in p_match:
+                player.tournament_weight = weight
+                player.update('tournament_weight', player.tournament_weight)
+                weight -= 1
             while p_match:
                 middle = int(len(p_match)/2)
-                match = ([p_match[0].id, 0], [p_match[middle].id, 0])
+                player_1 = p_match[0]
+                player_2 = p_match[middle]    
+                player_1.vs.append(player_2.id)
+                player_1.update('vs', player_1.vs)
+                player_2.vs.append(player_1.id)
+                player_2.update('vs', player_2.vs)
+                match = ([player_1.id, 0], [player_2.id, 0])
                 self.rounds.matchs_list.append(match)
-                self.rounds.update('matchs_list', self.rounds.matchs_list)
-                p_match[0].vs.append(p_match[middle].id)
-                p_match[0].update('vs', p_match[0].vs)
-                p_match[middle].vs.append(p_match[0].id)
-                p_match[middle].update('vs', p_match[middle].vs)
+                del p_match[middle]
                 del p_match[0]
-                try:
-                    del p_match[middle - 1]
-                except IndexError:
-                     del p_match[0]
-        if self.rounds.count % 2 == 0:
-            p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
-            while p_match:
-                player = 1
-                end_list = 1
-                while p_match[0].id in p_match[player].vs:
-                    player += 1
-                    end_list += 1
-                match = ([p_match[0].id, 0], [p_match[player].id, 0])
-                self.rounds.matchs_list.append(match)
-                p_match[0].vs.append(p_match[player].id)
-                p_match[0].update('vs', p_match[0].vs)
-                p_match[player].vs.append(p_match[0].id)
-                p_match[player].update('vs', p_match[player].vs)
-                del p_match[0]
-                del p_match[player - end_list]  
             self.rounds.update('matchs_list', self.rounds.matchs_list)
-        if self.rounds.count % 2 != 0 and self.rounds.count != 1:
-            p_match = self.tournament_players_list()
-            p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=False)
+        else:
             while p_match:
-                player = 1
-                end_list = 1  
-                while p_match:
-                    player = 1
-                    end_list = 1
-                    while p_match[0].id in p_match[player].vs:
-                        player += 1
-                        end_list += 1
-                    match = ([p_match[0].id, 0], [p_match[player].id, 0])
-                    self.rounds.matchs_list.append(match)
-                    p_match[0].vs.append(p_match[player].id)
-                    p_match[0].update('vs', p_match[0].vs)
-                    p_match[player].vs.append(p_match[0].id)
-                    p_match[player].update('vs', p_match[player].vs)
-                    del p_match[0]
-                    del p_match[player - end_list]  
-                    self.rounds.matchs_list.reverse()
-                self.rounds.update('matchs_list', self.rounds.matchs_list)
-
+                player_1 = p_match[0]
+                del p_match[0]
+                for player_model in p_match:
+                    if player_model.id in player_1.no_vs:
+                        player_2 = player_model
+                        p_match.remove(player_model)
+                        break 
+                player_1.vs.append(player_2.id)
+                player_1.update('vs', player_1.vs)
+                player_2.vs.append(player_1.id)
+                player_2.update('vs', player_2.vs)
+                match = ([player_1.id, 0], [player_2.id, 0])
+                self.rounds.matchs_list.append(match)          
+            self.rounds.update('matchs_list', self.rounds.matchs_list)
     def match_management(self, match_nb, result):
         """match management method"""
         t_players = self.tournament_players_list()
@@ -225,12 +222,16 @@ class RoundsControl(Controller):
                 if player.id == self.rounds.matchs_list[match_nb][0][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
+                    player.tournament_weight += 10
+                    player.update('tournament_weight', player.tournament_weight)
         if result == '2':
             self.rounds.matchs_list[match_nb][1][1] += 1
             for player in t_players:
                 if player.id == self.rounds.matchs_list[match_nb][1][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
+                    player.tournament_weight += 10
+                    player.update('tournament_weight', player.tournament_weight)
         if result == '3':
             self.rounds.matchs_list[match_nb][0][1] += 0.5
             self.rounds.matchs_list[match_nb][1][1] += 0.5
@@ -238,10 +239,14 @@ class RoundsControl(Controller):
                 if player.id == self.rounds.matchs_list[match_nb][0][0]:
                     player.tournament_points += 0.5
                     player.update('tournament_points', player.tournament_points)
+                    player.tournament_weight += 5
+                    player.update('tournament_weight', player.tournament_weight)
             for player in t_players:
                 if player.id == self.rounds.matchs_list[match_nb][1][0]:
                     player.tournament_points += 0.5
                     player.update('tournament_points', player.tournament_points)
+                    player.tournament_weight += 5
+                    player.update('tournament_weight', player.tournament_weight)
         self.rounds.update('matchs_list', self.rounds.matchs_list)
         self.rounds.finish_matchs.append(match_nb)
         self.rounds.update('finish_matchs', self.rounds.finish_matchs)

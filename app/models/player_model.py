@@ -13,7 +13,9 @@ class PlayerModel(Model):
         self.rank = None
         self.tournament_points = 0.0
         self.tournament_list = None
+        self.no_vs = []
         self.vs = []
+        self.tournament_weight = 0
         if attributs:
             for attr_name, attr_value in attributs.items():
                 setattr(self, attr_name, attr_value)
