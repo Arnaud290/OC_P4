@@ -17,28 +17,27 @@ class ManagePlayerControl(Controller):
 
     def manage_player_menu(self):
         """Manage player menu method"""
+        self.actual_players_list = self.players_list()
+        tab_players_list = PlayerModel.get_serialized()
+        self.view.add_title_menu("MANAGE PLAYERS")
+        elements_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
+        self.view.tab_view("Actual players", tab_players_list, elements_columns)
+        self.view.add_menu_line("Create player")
+        self.view.add_menu_line("modify player")
+        self.view.add_menu_line("Quit")
         while True:
-            self.actual_players_list = self.players_list()
-            tab_players_list = PlayerModel.get_serialized()
-            self.view.add_title_menu("MANAGE PLAYERS")
-            elements_columns = ['id', 'first_name', 'last_name', 'birth_date' ,'sex', 'rank']
-            self.view.tab_view("Actual players", tab_players_list, elements_columns)
-            self.view.add_menu_line("Create player")
-            self.view.add_menu_line("modify player")
-            self.view.add_menu_line("Quit")
             self.select = self.view.get_choice()
             if self.select not in ('1', '2', '3'):
-                self.control = ManagePlayerControl()
-                self.control()
+                continue
             else:
-                if self.select == '1':
-                    self.create_player()
-                if self.select == '2':
-                    self.modify_player(self.actual_players_list)
-                if self.select == '3':
-                    break
-        self.control = main_menu_control.MainMenuControl()
-        self.control()
+                break
+        if self.select == '1':
+            self.create_player()
+        if self.select == '2':
+            self.modify_player(self.actual_players_list)
+        if self.select == '3':
+            self.control = main_menu_control.MainMenuControl()
+            return self.control()
 
     def create_player(self):
         """Create player method"""
@@ -61,10 +60,10 @@ class ManagePlayerControl(Controller):
             except ValueError:
                 continue
         player.save()
-            
+
     def modify_player(self, players_model):
         """Manage player method"""
-    
+
         while True:
             id_player = self.view.request("Enter player id or Q for quit:").upper()
             if id_player == 'Q':

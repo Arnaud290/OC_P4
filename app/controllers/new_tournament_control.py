@@ -42,7 +42,7 @@ class NewTournamentControl(Controller):
                 self.new_tournament()
             if self.select == '2':
                 self.control = main_menu_control.MainMenuControl()
-                self.control()
+                return self.control()
 
     def new_tournament(self):
         """create new tournament method"""
@@ -53,10 +53,15 @@ class NewTournamentControl(Controller):
             choice = self.view.request("Number players (default {}) : ".format(settings.NB_PLAYERS))
             if choice:
                 try:
-                    self.tournament.nb_players = abs(int(choice))
+                    choice = abs(int(choice))
                 except ValueError:
                     continue
+                if choice % 2 != 0:
+                    self.view.indication('the number of players must be an even number')
+                    self.view.pause()
+                    continue
                 else:
+                    self.tournament.nb_players = choice
                     break
             else:
                 self.tournament.nb_players = int(settings.NB_PLAYERS)
@@ -65,10 +70,16 @@ class NewTournamentControl(Controller):
             choice = self.view.request("Number rounds (default {}) : ".format(settings.NB_ROUNDS))
             if choice:
                 try:
-                    self.tournament.nb_rounds = abs(int(choice))
+                    choice = abs(int(choice))
                 except ValueError:
                     continue
+                full_nb_rounds = self.tournament.nb_players - 1
+                if choice > full_nb_rounds:
+                    self.view.indication(("The number of rounds must not be greater than : " + full_nb_rounds))
+                    self.view.pause()
+                    continue
                 else:
+                    self.tournament.nb_rounds = choice
                     break
             else:
                 self.tournament.nb_rounds = int(settings.NB_ROUNDS)
@@ -156,11 +167,11 @@ class NewTournamentControl(Controller):
                     else:
                         continue
             if choice == '5':
+                if len(self.tournament.player_list) != self.tournament.nb_players:
+                    self.view.indication("Players number must be {}".format(self.tournament.nb_players))
+                    self.view.pause()
+                    continue
                 while True:
-                    if len(self.tournament.player_list) != self.tournament.nb_players:
-                        self.view.indication("Players number must be {}".format(self.tournament.nb_players))
-                        self.view.pause()
-                        break
                     choice = self.view.request("Start tournament ? (Y or N)").upper()
                     if choice not in ('Y', 'N'):
                         continue
@@ -170,28 +181,26 @@ class NewTournamentControl(Controller):
                             round_game = RoundModel()
                             round_game.id_tourament = self.tournament.id
                             round_game.count = rounds_nb
-                            round_game.name = 'Round ' + str(rounds_nb)  
+                            round_game.name = 'Round ' + str(rounds_nb)
                             self.tournament.round_list.append(round_game.id)
                             round_game.save()
                             rounds_nb += 1
                         self.tournament.in_progress = True
                         self.tournament.save()
                         self.control = RoundsControl()
-                        break
+                        return self.control()
                     if choice == 'N':
-                        self.control = ManagePlayerControl()
                         break
-                self.control()
             if choice == '6':
                 choice = self.view.request("quit by deleting the tournament? (Y or N)").upper()
                 if choice not in ('Y', 'N'):
-                    pass
+                    continue
                 if choice == 'Y':
                     self.tournament.delete()
-                    break
+                    self.control = main_menu_control.MainMenuControl()
+                    return self.control()
                 if choice == 'N':
                     self.tournament.in_progress = True
                     self.tournament.save()
-                    break
-        self.control = main_menu_control.MainMenuControl()
-        self.control()
+                    self.control = main_menu_control.MainMenuControl()
+                    return self.control()

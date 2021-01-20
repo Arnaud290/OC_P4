@@ -1,6 +1,6 @@
 """Program launch module"""
-from app.controllers import main_menu_control
+from app.controllers import application_controller
 
 if __name__ == "__main__":
-    main = main_menu_control.MainMenuControl()
-    main()
+    main = application_controller.ApplicationController()
+    main.start()

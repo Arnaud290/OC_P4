@@ -7,11 +7,12 @@ from ..views.view import View
 from ..models.player_model import PlayerModel
 from . import manage_player_control
 
+
 class RoundsControl(Controller):
     """Rounds control class"""
     def __call__(self):
         self.select = ''
-        self.in_progress = True   
+        self.in_progress = True
         self.actual_tournaments_list = self.tournaments_list()
         self.tournament = self.actual_tournaments_list[-1]
         self.view = View()
@@ -19,7 +20,7 @@ class RoundsControl(Controller):
         self.rounds = None
         self.delete_tournament = False
         self.rounds_engine()
-            
+
     def tournament_players_list(self):
         all_players_list = self.players_list()
         t_players = []
@@ -27,29 +28,35 @@ class RoundsControl(Controller):
             if player.id in self.tournament.player_list:
                 t_players.append(player)
         return t_players
-    
+
     def tournament_rounds_list(self):
         rounds_model_list = self.rounds_list()
         t_rounds = []
         for round_model in rounds_model_list:
             if round_model.id in self.tournament.round_list:
-               t_rounds.append(round_model) 
+                t_rounds.append(round_model)
         return t_rounds
 
     def rounds_engine(self):
         """Round menu method"""
         t_rounds = self.tournament_rounds_list()
-        while t_rounds and self.in_progress:
+        while t_rounds and self.tournament:
             self.rounds = t_rounds.pop(0)
-            while not self.rounds.finish and self.in_progress: 
+            while not self.rounds.finish and self.in_progress:
                 if not self.rounds.start and not self.rounds.matchs_list:
                     self.create_rounds_matchs()
                     self.rounds_menu()
+                    continue
                 if not self.rounds.start and self.rounds.matchs_list and not self.rounds.finish:
-                    self.rounds_menu()    
+                    self.rounds_menu()
+                    continue
                 if self.rounds.start and not self.rounds.finish:
-                    self.rounds_menu() 
-        if not t_rounds and not self.delete_tournament:
+                    self.rounds_menu()
+                    continue
+        if not self.tournament and not self.in_progress:
+            self.control = main_menu_control.MainMenuControl()
+            return self.control()
+        if not t_rounds and self.in_progress:
             title_menu = "Tournament : {} is finish !".format(self.tournament.name)
             self.view.add_title_menu(title_menu)
             t_players = self.tournament_players_list()
@@ -60,29 +67,27 @@ class RoundsControl(Controller):
             elements_columns = ['first_name', 'last_name', 'tournament_points', 'rank']
             self.view.tab_view("Tournament Players", tab_t_players, elements_columns)
             for player in t_players:
-                 player.tournament_points = 0.0
-                 player.update('tournament_points', player.tournament_points)
-            self.tournament.in_progress = False
-            self.tournament.update('in_progress', self.tournament.in_progress)
-            self.control = main_menu_control.MainMenuControl() 
-            self.view.pause()
-        if self.delete_tournament:
-            t_players = self.tournament_players_list()
-            t_rounds = self.tournament_rounds_list()
-            for rounds in t_rounds:
-                rounds.delete()
-            self.tournament.delete()
-            self.control = main_menu_control.MainMenuControl()  
-        for player in t_players:
                 player.tournament_points = 0.0
                 player.update('tournament_points', player.tournament_points)
-                player.tournament_weight = 0
-                player.update('tournament_weight', player.tournament_weight)
-                player.vs = []
-                player.no_vs = []
-                player.update('vs', player.vs)
-                player.update('no_vs', player.no_vs)
-        self.control()
+            self.tournament.in_progress = False
+            self.tournament.update('in_progress', self.tournament.in_progress)
+            self.clear_players_points()
+            self.view.pause()
+            self.control = main_menu_control.MainMenuControl()
+            return self.control()
+        else:
+            self.control = main_menu_control.MainMenuControl()
+            return self.control()
+
+    def clear_players_points(self):
+        t_players = self.tournament_players_list()
+        for player in t_players:
+            player.tournament_points = 0.0
+            player.update('tournament_points', player.tournament_points)
+            player.vs = []
+            player.no_vs = []
+            player.update('vs', player.vs)
+            player.update('no_vs', player.no_vs)
 
     def rounds_tab(self):
         title_menu = "Tournament : {}".format(self.tournament.name)
@@ -92,7 +97,7 @@ class RoundsControl(Controller):
         for player in t_players:
             tab_t_players.append(PlayerModel.get_id_serialized(player.id))
         elements_columns = ['tournament_points', 'rank', 'first_name', 'last_name', 'id']
-        self.view.tab_view("Tournament Players", tab_t_players, elements_columns)     
+        self.view.tab_view("Tournament Players", tab_t_players, elements_columns)
         tab_r_matchs = []
         match_nb = 1
         for matchs in self.rounds.matchs_list:
@@ -102,7 +107,7 @@ class RoundsControl(Controller):
                             {
                                 'match number': match_nb,
                                 'player1': player1['first_name'] + ' ' + player1['last_name'],
-                                'score1': matchs[0][1], 
+                                'score1': matchs[0][1],
                                 'player2': player2['first_name'] + ' ' + player2['last_name'],
                                 'score2': matchs[1][1]
                             }
@@ -115,7 +120,7 @@ class RoundsControl(Controller):
         self.rounds_tab()
         if not self.rounds.start:
             self.view.add_menu_line("Start Round")
-        else:    
+        else:
             self.view.add_menu_line("Finish Match ?")
         self.view.add_menu_line("Manage players tournament")
         self.view.add_menu_line("Quit")
@@ -157,14 +162,20 @@ class RoundsControl(Controller):
                 choice = self.view.request("quit by deleting the tournament? (Y or N)").upper()
                 if choice not in ('Y', 'N'):
                     continue
-                if choice == 'Y':
-                    self.delete_tournament = True
-                    self.in_progress = False
+                else:
                     break
-                if choice == 'N':
-                    self.in_progress = False
-                    break
-                   
+            if choice == 'Y':
+                t_players = self.tournament_players_list()
+                t_rounds = self.tournament_rounds_list()
+                for rounds in t_rounds:
+                    rounds.delete()
+                self.tournament.delete()
+                self.clear_players_points()
+                self.in_progress = False
+                self.tournament = False
+            if choice == 'N':
+                self.in_progress = False
+
     def create_rounds_matchs(self):
         """create matchs round method"""
         t_players_id = []
@@ -179,16 +190,10 @@ class RoundsControl(Controller):
                     player.no_vs.append(id_player)
             player.update('no_vs', player.no_vs)
         if self.rounds.count == 1:
-            p_match.sort(key=operator.attrgetter('rank'), reverse=True) 
-            weight = self.tournament.nb_players
-            for player in p_match:
-                player.tournament_weight = weight
-                player.update('tournament_weight', player.tournament_weight)
-                weight -= 1
             while p_match:
                 middle = int(len(p_match)/2)
                 player_1 = p_match[0]
-                player_2 = p_match[middle]    
+                player_2 = p_match[middle]
                 player_1.vs.append(player_2.id)
                 player_1.update('vs', player_1.vs)
                 player_2.vs.append(player_1.id)
@@ -199,22 +204,28 @@ class RoundsControl(Controller):
                 del p_match[0]
             self.rounds.update('matchs_list', self.rounds.matchs_list)
         else:
-            pos_player = 0   
-            while True: 
-                p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)      
+            pos_player = 0
+            while True:
+                p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
                 player_1 = p_match[pos_player]
                 del p_match[pos_player]
                 for player_model in p_match:
-                    if player_model.id == player_1.no_vs[pos_player]:
-                        player_2 = player_model
-                        p_match.remove(player_model)
-                        break 
+                    try:
+                        if player_model.id == player_1.no_vs[pos_player]:
+                            player_2 = player_model
+                            p_match.remove(player_model)
+                            break
+                    except IndexError:
+                        if player_model.id == player_1.no_vs[-1]:
+                            player_2 = player_model
+                            p_match.remove(player_model)
+                            break
                 player_1.vs.append(player_2.id)
                 player_1.update('vs', player_1.vs)
                 player_2.vs.append(player_1.id)
                 player_2.update('vs', player_2.vs)
                 match = ([player_1.id, 0], [player_2.id, 0])
-                self.rounds.matchs_list.append(match) 
+                self.rounds.matchs_list.append(match)
                 while p_match:
                     player_1 = p_match[0]
                     del p_match[0]
@@ -222,13 +233,13 @@ class RoundsControl(Controller):
                         if player_model.id in player_1.no_vs:
                             player_2 = player_model
                             p_match.remove(player_model)
-                            break 
+                            break
                     player_1.vs.append(player_2.id)
                     player_1.update('vs', player_1.vs)
                     player_2.vs.append(player_1.id)
                     player_2.update('vs', player_2.vs)
                     match = ([player_1.id, 0], [player_2.id, 0])
-                    self.rounds.matchs_list.append(match) 
+                    self.rounds.matchs_list.append(match)
                 if len(self.rounds.matchs_list) > int(self.tournament.nb_players/2):
                     p_match = self.tournament_players_list()
                     for player in p_match:
@@ -252,16 +263,12 @@ class RoundsControl(Controller):
                 if player.id == self.rounds.matchs_list[match_nb][0][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
-                    player.tournament_weight += 10
-                    player.update('tournament_weight', player.tournament_weight)
         if result == '2':
             self.rounds.matchs_list[match_nb][1][1] += 1
             for player in t_players:
                 if player.id == self.rounds.matchs_list[match_nb][1][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
-                    player.tournament_weight += 10
-                    player.update('tournament_weight', player.tournament_weight)
         if result == '3':
             self.rounds.matchs_list[match_nb][0][1] += 0.5
             self.rounds.matchs_list[match_nb][1][1] += 0.5
@@ -269,18 +276,14 @@ class RoundsControl(Controller):
                 if player.id == self.rounds.matchs_list[match_nb][0][0]:
                     player.tournament_points += 0.5
                     player.update('tournament_points', player.tournament_points)
-                    player.tournament_weight += 5
-                    player.update('tournament_weight', player.tournament_weight)
             for player in t_players:
                 if player.id == self.rounds.matchs_list[match_nb][1][0]:
                     player.tournament_points += 0.5
                     player.update('tournament_points', player.tournament_points)
-                    player.tournament_weight += 5
-                    player.update('tournament_weight', player.tournament_weight)
         self.rounds.update('matchs_list', self.rounds.matchs_list)
         self.rounds.finish_matchs.append(match_nb)
         self.rounds.update('finish_matchs', self.rounds.finish_matchs)
-        if  len(self.rounds.finish_matchs) == int(self.tournament.nb_players/2):
+        if len(self.rounds.finish_matchs) == int(self.tournament.nb_players/2):
             self.rounds.start = False
             self.rounds.update('start', self.rounds.start)
             self.rounds.finish = True
