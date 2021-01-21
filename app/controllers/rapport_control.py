@@ -38,8 +38,9 @@ class RapportControl(Controller):
                 else:
                     break
             if self.select == '1':
-                players_list = PlayerModel.get_serialized
-                self.list_of_players(players_list)
+                players_list = PlayerModel.get_serialized()
+                table_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
+                self.list_of_players(players_list, table_columns)
                 continue
             if self.select == '2':
                 self.list_of_tournament_players()
@@ -56,11 +57,11 @@ class RapportControl(Controller):
                 self.control = main_menu_control.MainMenuControl()
                 return self.control()
 
-    def list_of_players(self, players_list):
+    def list_of_players(self, players_list, table_columns):
         self.title_table = "Alphabetical order"
         self.table = players_list
+        self.table_columns = table_columns
         self.table = sorted(self.table, key=lambda item: item.get('last_name'), reverse=False)
-        self.table_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
         while True:  
             self.view.add_title_menu("LIST OF PLAYERS")
             self.view.tab_view(self.title_table, self.table, self.table_columns)
@@ -78,7 +79,7 @@ class RapportControl(Controller):
             if choice == '1':
                 if self.title_table == "Alphabetical order":
                     self.title_table = "Rank order"
-                    self.table.sort(key=lambda x: (x['rank']), reverse=True)   
+                    self.table.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)   
                 else:
                     self.title_table = "Alphabetical order"
                     self.table = sorted(self.table, key=lambda item: item.get('last_name'), reverse=False)
@@ -121,11 +122,27 @@ class RapportControl(Controller):
                         continue
                     else:
                         tournament = TournamentModel.get_id_serialized(choice)
-                    players_list = []
-                    for players in tournament['player_list']:
-                        players_list.append(PlayerModel.get_id_serialized(players))
-                    self.list_of_players(players_list)
-                    break
+                        rounds_list = []
+                        for rounds in tournament['round_list']:
+                            rounds_list.append(RoundModel.get_id_serialized(rounds))
+                        matchs_list = []
+                        for rounds in rounds_list:
+                            for matchs in rounds['matchs_list']:
+                                matchs_list.append(matchs)
+                        players_list = []
+                        for players in tournament['player_list']:
+                            players_list.append(PlayerModel.get_id_serialized(players))
+                        for player in players_list:
+                            tournament_points = 0
+                            for matchs in matchs_list:
+                                if matchs[0][0] == player['id']:
+                                    tournament_points += matchs[0][1]
+                                if matchs[1][0] == player['id']:
+                                    tournament_points += matchs[1][1]
+                            player['tournament_points'] = tournament_points
+                        table_columns = ['id', 'first_name', 'last_name', 'rank' ,'tournament_points']   
+                        self.list_of_players(players_list, table_columns)
+                        break
 
     def list_of_tournaments(self):
          self.view.add_title_menu("LIST OF TOURNAMENTS")
