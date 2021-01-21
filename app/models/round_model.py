@@ -14,7 +14,7 @@ class RoundModel(Model):
         self.count = 0
         self.name = None
         self.date_start = None
-        self.Date_finish = None
+        self.date_finish = None
         self.finish_matchs = []
         if attributs:
             for attr_name, attr_value in attributs.items():
