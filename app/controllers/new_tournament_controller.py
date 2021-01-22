@@ -1,16 +1,16 @@
 """main menu control module"""
 from .controller import Controller
-from . import main_menu_control
+from . import main_menu_controller
 from ..models.tournament_model import TournamentModel
 from ..models.player_model import PlayerModel
 from ..models.round_model import RoundModel
-from .rounds_control import RoundsControl
+from .rounds_controller import RoundsController
 from ..views.view import View
 from ..config import settings
-from .manage_player_control import ManagePlayerControl
+from .manage_player_controller import ManagePlayerController
 
 
-class NewTournamentControl(Controller):
+class NewTournamentController(Controller):
     """main menu control class"""
     def __call__(self):
         self.select = ''
@@ -35,13 +35,13 @@ class NewTournamentControl(Controller):
         self.view.add_menu_line("Quit")
         self.select = self.view.get_choice()
         if self.select not in ('1', '2'):
-            self.control = NewTournamentControl()
+            self.control = NewTournamentController()
             self.control()
         else:
             if self.select == '1':
                 self.new_tournament()
             if self.select == '2':
-                self.control = main_menu_control.MainMenuControl()
+                self.control = main_menu_controller.MainMenuController()
                 return self.control()
 
     def new_tournament(self):
@@ -129,10 +129,10 @@ class NewTournamentControl(Controller):
             if choice not in ('1', '2', '3', '4', '5', '6'):
                 continue
             if choice == '1':
-                self.control = ManagePlayerControl()
+                self.control = ManagePlayerController()
                 self.control.create_player()
             if choice == '2':
-                self.control = ManagePlayerControl()
+                self.control = ManagePlayerController()
                 self.control.modify_player(players_model)
             if choice == '3':
                 while True:
@@ -187,7 +187,7 @@ class NewTournamentControl(Controller):
                             rounds_nb += 1
                         self.tournament.in_progress = True
                         self.tournament.save()
-                        self.control = RoundsControl()
+                        self.control = RoundsController()
                         return self.control()
                     if choice == 'N':
                         break
@@ -197,10 +197,10 @@ class NewTournamentControl(Controller):
                     continue
                 if choice == 'Y':
                     self.tournament.delete()
-                    self.control = main_menu_control.MainMenuControl()
+                    self.control = main_menu_controller.MainMenuController()
                     return self.control()
                 if choice == 'N':
                     self.tournament.in_progress = True
                     self.tournament.save()
-                    self.control = main_menu_control.MainMenuControl()
+                    self.control = main_menu_controller.MainMenuController()
                     return self.control()

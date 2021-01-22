@@ -1,13 +1,13 @@
 """main menu control module"""
 from .controller import Controller
-from .new_tournament_control import NewTournamentControl
-from .manage_player_control import ManagePlayerControl
-from .rounds_control import RoundsControl
-from . import rapport_control
+from .new_tournament_controller import NewTournamentController
+from .manage_player_controller import ManagePlayerController
+from .rounds_controller import RoundsController
+from . import rapport_controller
 from ..views.view import View
 
 
-class MainMenuControl(Controller):
+class MainMenuController(Controller):
     """main menu control class"""
     def __call__(self):
         self.control = None
@@ -23,15 +23,15 @@ class MainMenuControl(Controller):
             if self.actual_tournaments_list[-1].in_progress:
                 self.view.add_menu_line("Continue Tournament")
                 if self.actual_tournaments_list[-1].round_list:
-                    self.control = RoundsControl()
+                    self.control = RoundsController()
                 else:
-                    self.control = NewTournamentControl()
+                    self.control = NewTournamentController()
             else:
                 self.view.add_menu_line("New Tournament")
-                self.control = NewTournamentControl()
+                self.control = NewTournamentController()
         else:
             self.view.add_menu_line("New Tournament")
-            self.control = NewTournamentControl()
+            self.control = NewTournamentController()
         self.view.add_menu_line("Manage Players")
         self.view.add_menu_line("Rapports")
         self.view.add_menu_line("Quit")
@@ -44,10 +44,10 @@ class MainMenuControl(Controller):
         if self.select == '1':
             return self.control()
         if self.select == '2':
-            self.control = ManagePlayerControl()
+            self.control = ManagePlayerController()
             return self.control()
         if self.select == '3':
-            self.control = rapport_control.RapportControl()
+            self.control = rapport_controller.RapportController()
             return self.control()
         if self.select == '4':
             return None

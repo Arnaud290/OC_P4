@@ -2,13 +2,13 @@
 import time
 import operator
 from .controller import Controller
-from . import main_menu_control
+from . import main_menu_controller
 from ..views.view import View
 from ..models.player_model import PlayerModel
-from . import manage_player_control
+from . import manage_player_controller
 
 
-class RoundsControl(Controller):
+class RoundsController(Controller):
     """Rounds control class"""
     def __call__(self):
         self.select = ''
@@ -54,18 +54,14 @@ class RoundsControl(Controller):
                     self.rounds_menu()
                     continue
         if not self.tournament and not self.in_progress:
-            self.control = main_menu_control.MainMenuControl()
+            self.control = main_menu_controller.MainMenuController()
             return self.control()
         if not t_rounds and self.in_progress:
             title_menu = "Tournament : {} is finish !".format(self.tournament.name)
             self.view.add_title_menu(title_menu)
             t_players = self.tournament_players_list()
-            tab_t_players = []
-            for player in t_players:
-                tab_t_players.append(PlayerModel.get_id_serialized(player.id))
-                tab_t_players.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)
             elements_columns = ['first_name', 'last_name', 'tournament_points', 'rank']
-            self.view.tab_view("Tournament Players", tab_t_players, elements_columns)
+            self.view.tab_view("Tournament Players", self.tournament.tab_results , elements_columns)
             for player in t_players:
                 player.tournament_points = 0.0
                 player.update('tournament_points', player.tournament_points)
@@ -73,11 +69,21 @@ class RoundsControl(Controller):
             self.tournament.update('in_progress', self.tournament.in_progress)
             self.clear_players_points()
             self.view.pause()
-            self.control = main_menu_control.MainMenuControl()
+            self.control = main_menu_controller.MainMenuController()
             return self.control()
         else:
-            self.control = main_menu_control.MainMenuControl()
+            self.control = main_menu_controller.MainMenuController()
             return self.control()
+
+    def tab_results(self):
+        t_players = self.tournament_players_list()
+        tab_t_players = []
+        for player in t_players:
+                tab_t_players.append(PlayerModel.get_id_serialized(player.id))
+                tab_t_players.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)
+        return tab_t_players
+           
+
 
     def clear_players_points(self):
         t_players = self.tournament_players_list()
@@ -155,7 +161,7 @@ class RoundsControl(Controller):
                     break
         if self.select == '2':
             t_players = self.tournament_players_list()
-            self.control = manage_player_control.ManagePlayerControl()
+            self.control = manage_player_controller.ManagePlayerController()
             self.control.modify_player(t_players)
         if self.select == '3':
             while True:
@@ -288,5 +294,7 @@ class RoundsControl(Controller):
             self.rounds.update('start', self.rounds.start)
             self.rounds.finish = True
             self.rounds.update('finish', self.rounds.finish)
-            self.rounds.Date_finish = time.strftime("%d/%m/%Y %H:%M:%S")
-            self.rounds.update('Date_finish', self.rounds.Date_finish)
+            self.rounds.date_finish = time.strftime("%d/%m/%Y %H:%M:%S")
+            self.rounds.update('date_finish', self.rounds.date_finish)
+            self.tournament.tab_results = self.tab_results()
+            self.tournament.update('tab_results', self.tournament.tab_results)

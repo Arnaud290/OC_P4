@@ -1,12 +1,12 @@
 """Application controller module"""
-from .main_menu_control import MainMenuControl
+from .main_menu_controller import MainMenuController
 from ..views.view import View
 
 
 class ApplicationController:
     """Application controller class"""
     def __init__(self):
-        self.controller = MainMenuControl()
+        self.controller = MainMenuController()
         self.view = View()
 
     def start(self):

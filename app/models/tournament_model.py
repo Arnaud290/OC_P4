@@ -17,6 +17,7 @@ class TournamentModel(Model):
         self.time_control = None
         self.description = None
         self.in_progress = False
+        self.tab_results = []
         if attributs:
             for attr_name, attr_value in attributs.items():
                 setattr(self, attr_name, attr_value)

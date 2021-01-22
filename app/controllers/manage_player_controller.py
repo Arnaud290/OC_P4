@@ -1,43 +1,76 @@
 """manage player control module"""
 from .controller import Controller
-from . import main_menu_control
+from . import main_menu_controller
 from ..models.player_model import PlayerModel
 from ..views.view import View
 
 
-class ManagePlayerControl(Controller):
+class ManagePlayerController(Controller):
     """Manage player control class"""
     def __init__(self):
         self.view = View()
 
     def __call__(self):
-        self.select = ''
         self.control = None
+        self.tab_players_title = "Id order"
+        self.tab_players_list = PlayerModel.get_serialized()
+        self.tab_players_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
         self.manage_player_menu()
 
     def manage_player_menu(self):
         """Manage player menu method"""
-        self.actual_players_list = self.players_list()
-        tab_players_list = PlayerModel.get_serialized()
-        self.view.add_title_menu("MANAGE PLAYERS")
-        elements_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
-        self.view.tab_view("Actual players", tab_players_list, elements_columns)
-        self.view.add_menu_line("Create player")
-        self.view.add_menu_line("modify player")
-        self.view.add_menu_line("Quit")
+        select_sort = "Id order"
         while True:
-            self.select = self.view.get_choice()
-            if self.select not in ('1', '2', '3'):
+            self.actual_players_list = self.players_list()
+            self.tab_players_list = PlayerModel.get_serialized()
+            self.view.add_title_menu("MANAGE PLAYERS")
+            self.tab_players_list = self.tab_sort(PlayerModel.get_serialized(), select_sort)
+            if self.tab_players_list:
+                self.view.tab_view(self.tab_players_title, self.tab_players_list, self.tab_players_columns)
+            if self.tab_players_title == "Id order":
+                    self.view.add_menu_line("For alphabetical order")
+            if self.tab_players_title == "Aphabetical order":  
+                self.view.add_menu_line("For rank order")
+            if self.tab_players_title == "Rank order":
+                self.view.add_menu_line("For id order")    
+            self.view.add_menu_line("Create player")
+            self.view.add_menu_line("modify player")
+            self.view.add_menu_line("Quit")
+            choice = self.view.get_choice()
+            if choice not in ('1', '2', '3', '4'):
                 continue
-            else:
+            if choice == '1':
+                if select_sort == "Id order":
+                    self.tab_players_title = "Aphabetical order"
+                    select_sort = "Aphabetical order"
+                    continue
+                if select_sort == "Aphabetical order":
+                    self.tab_players_title = "Rank order"
+                    select_sort = "Rank order"
+                    continue
+                if select_sort == "Rank order":
+                    self.tab_players_title = "Id order"
+                    select_sort = "Id order"
+                    continue
+            if choice  == '2':
+                self.create_player()
+                continue
+            if choice  == '3':
+                self.modify_player(self.actual_players_list)
+                continue
+            if choice  == '4':
                 break
-        if self.select == '1':
-            self.create_player()
-        if self.select == '2':
-            self.modify_player(self.actual_players_list)
-        if self.select == '3':
-            self.control = main_menu_control.MainMenuControl()
-            return self.control()
+        self.control = main_menu_controller.MainMenuController()
+        return self.control()
+
+    def tab_sort(self, tab, select_sort):
+        if select_sort == "Id order": 
+            tab = sorted(tab, key=lambda x: x['id'], reverse=False)       
+        if select_sort == "Aphabetical order":
+            tab = sorted(tab, key=lambda item: item.get('last_name'), reverse=False)    
+        if select_sort == "Rank order":
+            tab = sorted(tab,key=lambda x: x['rank'], reverse=True)  
+        return tab
 
     def create_player(self):
         """Create player method"""
@@ -63,11 +96,8 @@ class ManagePlayerControl(Controller):
 
     def modify_player(self, players_model):
         """Manage player method"""
-
         while True:
-            id_player = self.view.request("Enter player id or Q for quit:").upper()
-            if id_player == 'Q':
-                break
+            id_player = self.view.request("Enter player id").upper()
             try:
                 id_player = abs(int(id_player))
             except ValueError:
@@ -111,5 +141,7 @@ class ManagePlayerControl(Controller):
                     else:
                         player.update('rank', change)
                         break
-                break
+                else:
+                    break
             break
+    
