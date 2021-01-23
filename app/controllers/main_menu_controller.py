@@ -1,18 +1,18 @@
 """main menu control module"""
-from .controller import Controller
 from .new_tournament_controller import NewTournamentController
 from .manage_player_controller import ManagePlayerController
 from .rounds_controller import RoundsController
 from . import rapport_controller
 from ..views.view import View
+from ..models.model_template import ModelTemplate
 
 
-class MainMenuController(Controller):
+class MainMenuController:
     """main menu control class"""
     def __call__(self):
         self.control = None
         self.select = ''
-        self.actual_tournaments_list = self.tournaments_list()
+        self.actual_tournaments_list = ModelTemplate.get_model("TournamentModel")
         self.view = View()
         self.main_menu()
 

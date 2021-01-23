@@ -1,19 +1,19 @@
 """match control module"""
 import time
 import operator
-from .controller import Controller
 from . import main_menu_controller
 from ..views.view import View
+from ..models.model_template import ModelTemplate
 from ..models.player_model import PlayerModel
 from . import manage_player_controller
 
 
-class RoundsController(Controller):
+class RoundsController:
     """Rounds control class"""
     def __call__(self):
         self.select = ''
         self.in_progress = True
-        self.actual_tournaments_list = self.tournaments_list()
+        self.actual_tournaments_list = ModelTemplate.get_model('TournamentModel')
         self.tournament = self.actual_tournaments_list[-1]
         self.view = View()
         self.control = None
@@ -22,7 +22,7 @@ class RoundsController(Controller):
         self.rounds_engine()
 
     def tournament_players_list(self):
-        all_players_list = self.players_list()
+        all_players_list = ModelTemplate.get_model('PlayerModel')
         t_players = []
         for player in all_players_list:
             if player.id in self.tournament.player_list:
@@ -30,11 +30,9 @@ class RoundsController(Controller):
         return t_players
 
     def tournament_rounds_list(self):
-        rounds_model_list = self.rounds_list()
         t_rounds = []
-        for round_model in rounds_model_list:
-            if round_model.id in self.tournament.round_list:
-                t_rounds.append(round_model)
+        for round_model in self.tournament.round_list:
+            t_rounds.append(ModelTemplate.get_model('RoundModel', round_model))
         return t_rounds
 
     def rounds_engine(self):
@@ -79,7 +77,7 @@ class RoundsController(Controller):
         t_players = self.tournament_players_list()
         tab_t_players = []
         for player in t_players:
-                tab_t_players.append(PlayerModel.get_id_serialized(player.id))
+                tab_t_players.append(ModelTemplate.get_serialized('PlayerModel', player.id))
                 tab_t_players.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)
         return tab_t_players
            
@@ -101,14 +99,14 @@ class RoundsController(Controller):
         tab_t_players = []
         t_players = self.tournament_players_list()
         for player in t_players:
-            tab_t_players.append(PlayerModel.get_id_serialized(player.id))
+            tab_t_players.append(ModelTemplate.get_serialized('PlayerModel', player.id))
         elements_columns = ['tournament_points', 'rank', 'first_name', 'last_name', 'id']
         self.view.tab_view("Tournament Players", tab_t_players, elements_columns)
         tab_r_matchs = []
         match_nb = 1
         for matchs in self.rounds.matchs_list:
-            player1 = PlayerModel.get_id_serialized(matchs[0][0])
-            player2 = PlayerModel.get_id_serialized(matchs[1][0])
+            player1 = ModelTemplate.get_serialized('PlayerModel', matchs[0][0])
+            player2 = ModelTemplate.get_serialized('PlayerModel', matchs[1][0])
             tab_r_matchs.append(
                             {
                                 'match number': match_nb,

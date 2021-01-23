@@ -1,12 +1,12 @@
 """tournament model module"""
-from .model import Model
 import time
-
+from .model import Model
+from . import model_template
 
 class TournamentModel(Model):
     """Tournament model class"""
     def __init__(self, **attributs):
-        self.id = self.get_number()
+        self.id = model_template.ModelTemplate.get_number('TournamentModel')
         self.name = None
         self.location = None
         self.date = time.strftime("%d/%m/%Y")

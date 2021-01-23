@@ -1,6 +1,6 @@
 """main menu control module"""
-from .controller import Controller
 from . import main_menu_controller
+from ..models.model_template import ModelTemplate
 from ..models.tournament_model import TournamentModel
 from ..models.player_model import PlayerModel
 from ..models.round_model import RoundModel
@@ -10,12 +10,12 @@ from ..config import settings
 from .manage_player_controller import ManagePlayerController
 
 
-class NewTournamentController(Controller):
+class NewTournamentController:
     """main menu control class"""
     def __call__(self):
         self.select = ''
         self.control = None
-        self.actual_tournaments_list = self.tournaments_list()
+        self.actual_tournaments_list = ModelTemplate.get_model('TournamentModel')
         self.view = View()
         if self.actual_tournaments_list:
             if self.actual_tournaments_list[-1].in_progress:
@@ -106,15 +106,15 @@ class NewTournamentController(Controller):
         id_players_tournament_list = self.tournament.player_list
         while True:
             id_all_players = []
-            players_model = self.players_list()
+            players_model = ModelTemplate.get_model('PlayerModel')
             for player in players_model:
                 id_all_players.append(player.id)
             tab_players_list = []
             tab_tournament_players = []
-            tab_players_list = PlayerModel.get_serialized()
+            tab_players_list = ModelTemplate.get_serialized('PlayerModel')
             for player_id in self.tournament.player_list:
-                tab_tournament_players.append(PlayerModel.get_id_serialized(player_id))
-                tab_players_list.remove(PlayerModel.get_id_serialized(player_id))
+                tab_tournament_players.append(ModelTemplate.get_serialized('PlayerModel', player_id))
+                tab_players_list.remove(ModelTemplate.get_serialized('PlayerModel', player_id))
             self.view.add_title_menu("TOURNAMENT PLAYERS")
             elements_columns = ['id', 'first_name', 'last_name', 'rank']
             self.view.tab_view("List of players to add", tab_players_list, elements_columns)

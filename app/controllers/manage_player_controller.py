@@ -1,11 +1,11 @@
 """manage player control module"""
-from .controller import Controller
 from . import main_menu_controller
 from ..models.player_model import PlayerModel
+from ..models.model_template import ModelTemplate
 from ..views.view import View
 
 
-class ManagePlayerController(Controller):
+class ManagePlayerController:
     """Manage player control class"""
     def __init__(self):
         self.view = View()
@@ -13,7 +13,7 @@ class ManagePlayerController(Controller):
     def __call__(self):
         self.control = None
         self.tab_players_title = "Id order"
-        self.tab_players_list = PlayerModel.get_serialized()
+        self.tab_players_list = ModelTemplate.get_serialized('PlayerModel')
         self.tab_players_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
         self.manage_player_menu()
 
@@ -21,10 +21,10 @@ class ManagePlayerController(Controller):
         """Manage player menu method"""
         select_sort = "Id order"
         while True:
-            self.actual_players_list = self.players_list()
-            self.tab_players_list = PlayerModel.get_serialized()
+            self.actual_players_list = ModelTemplate.get_model('PlayerModel')
+            self.tab_players_list = ModelTemplate.get_serialized('PlayerModel')
             self.view.add_title_menu("MANAGE PLAYERS")
-            self.tab_players_list = self.tab_sort(PlayerModel.get_serialized(), select_sort)
+            self.tab_players_list = self.tab_sort(self.tab_players_list, select_sort)
             if self.tab_players_list:
                 self.view.tab_view(self.tab_players_title, self.tab_players_list, self.tab_players_columns)
             if self.tab_players_title == "Id order":
@@ -75,7 +75,7 @@ class ManagePlayerController(Controller):
     def create_player(self):
         """Create player method"""
         player = PlayerModel()
-        player.id = PlayerModel.get_number()
+        player.id = ModelTemplate.get_number('PlayerModel')
         player.first_name = self.view.request("Enter first name:").capitalize()
         player.last_name = self.view.request("Enter last name:").capitalize()
         player.birth_date = self.view.request("Enter birth date (jj/mm//aaaa):")

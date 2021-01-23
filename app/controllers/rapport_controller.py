@@ -1,19 +1,19 @@
 """rapport control module"""
-from .controller import Controller
 from . import main_menu_controller
 from ..views.view import View
 from ..models.player_model import PlayerModel
 from ..models.tournament_model import TournamentModel
 from ..models.round_model import RoundModel
+from ..models.model_template import ModelTemplate
 
 
-class RapportController(Controller):
+class RapportController:
     """Rapport control class"""
     def __call__(self):
         self.control = None
         self.select = ''
-        self.actual_tournaments_list = self.tournaments_list()
-        self.actual_rounds_list = self.rounds_list()
+        self.actual_tournaments_list = ModelTemplate.get_model('TournamentModel')
+        self.actual_rounds_list = ModelTemplate.get_model('RoundModel')
         self.title_table = None
         self.table = []
         self.table_columns = []
@@ -64,7 +64,7 @@ class RapportController(Controller):
 
     def table_list_of_tournaments(self):
         self.title_table = "Tournaments"
-        self.table = TournamentModel.get_serialized()
+        self.table = ModelTemplate.get_serialized('TournamentModel')
         self.table_columns = [
                                 'id',
                                 'name',
@@ -117,7 +117,7 @@ class RapportController(Controller):
         for rounds in self.actual_rounds_list:
             if rounds.id in tournament.round_list:
                 rounds_models_list.append(rounds)
-                tab_list.append(RoundModel.get_id_serialized(rounds.id))
+                tab_list.append(ModelTemplate.get_serialized('RoundModel', rounds.id))
         rounds_tab_title = "Rounds list"
         rounds_tab_list = sorted(tab_list, key=lambda item: item.get('name'), reverse=False) 
         rounds_tab_columns = ['name', 'date_start', 'date_finish']
@@ -148,8 +148,8 @@ class RapportController(Controller):
                         match_tab_title = rounds_models_list[choice - 1].name
                         match_nb = 1
                         for matchs in rounds_models_list[choice - 1].matchs_list:
-                            player1 = PlayerModel.get_id_serialized(matchs[0][0])
-                            player2 = PlayerModel.get_id_serialized(matchs[1][0])
+                            player1 = ModelTemplate.get_serialized('PlayerModel', matchs[0][0])
+                            player2 = ModelTemplate.get_serialized('PlayerModel', matchs[1][0])
                             match_tab_list.append(
                                             {
                                                 'match number': match_nb,
