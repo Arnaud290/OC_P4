@@ -1,12 +1,12 @@
 """round model module"""
 from .model import Model
-from . import model_template
+from .. import services
 
 
 class RoundModel(Model):
     """round model class"""
     def __init__(self, **attributs):
-        self.id = model_template.ModelTemplate.get_number('RoundModel')
+        self.id = services.get_model_service.GetModelService.get_number('RoundModel')
         self.match_nb = 0
         self.matchs_list = []
         self.start = False

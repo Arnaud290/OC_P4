@@ -1,12 +1,12 @@
-""" general model module"""
+"""Get model service module"""
 from tinydb import TinyDB, Query
-from .player_model import PlayerModel
-from .tournament_model import TournamentModel
-from .round_model import RoundModel
+from ..models.player_model import PlayerModel
+from ..models.tournament_model import TournamentModel
+from ..models.round_model import RoundModel
 
 
-class ModelTemplate:
-    """general model class"""
+class GetModelService:
+    """Get model service class"""
     db = TinyDB('app/database/db.json')
     @classmethod
     def get_serialized(cls, class_model, id_model = None):

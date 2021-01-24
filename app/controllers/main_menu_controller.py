@@ -4,50 +4,48 @@ from .manage_player_controller import ManagePlayerController
 from .rounds_controller import RoundsController
 from . import rapport_controller
 from ..views.view import View
-from ..models.model_template import ModelTemplate
+from ..services.get_model_service import GetModelService
+from ..services.test_service import TestService
 
 
 class MainMenuController:
     """main menu control class"""
     def __call__(self):
         self.control = None
-        self.select = ''
-        self.actual_tournaments_list = ModelTemplate.get_model("TournamentModel")
-        self.view = View()
+        self.actual_tournaments_list = GetModelService.get_model("TournamentModel")
         self.main_menu()
+
+    def menu_display(self):
+        View.add_menu_line("Manage Players")
+        View.add_menu_line("Rapports")
+        View.add_menu_line("Quit")
 
     def main_menu(self):
         """Main menu méthod"""
-        self.view.add_title_menu("CHESS MAIN MENU")
+        View.add_title_menu("CHESS MAIN MENU")
         if self.actual_tournaments_list:
             if self.actual_tournaments_list[-1].in_progress:
-                self.view.add_menu_line("Continue Tournament")
+                View.add_menu_line("Continue Tournament")
+                self.menu_display()
                 if self.actual_tournaments_list[-1].round_list:
                     self.control = RoundsController()
                 else:
                     self.control = NewTournamentController()
             else:
-                self.view.add_menu_line("New Tournament")
+                View.add_menu_line("New Tournament")
                 self.control = NewTournamentController()
+                self.menu_display()
         else:
-            self.view.add_menu_line("New Tournament")
             self.control = NewTournamentController()
-        self.view.add_menu_line("Manage Players")
-        self.view.add_menu_line("Rapports")
-        self.view.add_menu_line("Quit")
-        while True:
-            self.select = self.view.choice_menu()
-            if self.select not in ('1', '2', '3', '4'):
-                continue
-            else:
-                break
-        if self.select == '1':
+
+        choice = TestService.test_alpha(test_element=('1', '2', '3', '4'))
+        if choice == '1':
             return self.control()
-        if self.select == '2':
+        if choice == '2':
             self.control = ManagePlayerController()
             return self.control()
-        if self.select == '3':
+        if choice == '3':
             self.control = rapport_controller.RapportController()
             return self.control()
-        if self.select == '4':
+        if choice == '4':
             return None

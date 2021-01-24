@@ -3,36 +3,32 @@ import time
 import operator
 from . import main_menu_controller
 from ..views.view import View
-from ..models.model_template import ModelTemplate
+from ..services.get_model_service import GetModelService
 from ..models.player_model import PlayerModel
 from . import manage_player_controller
-
+from ..services.test_service import TestService
 
 class RoundsController:
     """Rounds control class"""
     def __call__(self):
-        self.select = ''
         self.in_progress = True
-        self.actual_tournaments_list = ModelTemplate.get_model('TournamentModel')
+        self.actual_tournaments_list = GetModelService.get_model('TournamentModel')
         self.tournament = self.actual_tournaments_list[-1]
-        self.view = View()
         self.control = None
         self.rounds = None
         self.delete_tournament = False
         self.rounds_engine()
 
     def tournament_players_list(self):
-        all_players_list = ModelTemplate.get_model('PlayerModel')
         t_players = []
-        for player in all_players_list:
-            if player.id in self.tournament.player_list:
-                t_players.append(player)
+        for player in self.tournament.player_list:
+            t_players.append(GetModelService.get_model('PlayerModel', player))
         return t_players
 
     def tournament_rounds_list(self):
         t_rounds = []
         for round_model in self.tournament.round_list:
-            t_rounds.append(ModelTemplate.get_model('RoundModel', round_model))
+            t_rounds.append(GetModelService.get_model('RoundModel', round_model))
         return t_rounds
 
     def rounds_engine(self):
@@ -56,17 +52,17 @@ class RoundsController:
             return self.control()
         if not t_rounds and self.in_progress:
             title_menu = "Tournament : {} is finish !".format(self.tournament.name)
-            self.view.add_title_menu(title_menu)
+            View.add_title_menu(title_menu)
             t_players = self.tournament_players_list()
             elements_columns = ['first_name', 'last_name', 'tournament_points', 'rank']
-            self.view.tab_view("Tournament Players", self.tournament.tab_results , elements_columns)
+            View.tab_view("Tournament Players", self.tournament.tab_results , elements_columns)
             for player in t_players:
                 player.tournament_points = 0.0
                 player.update('tournament_points', player.tournament_points)
             self.tournament.in_progress = False
             self.tournament.update('in_progress', self.tournament.in_progress)
             self.clear_players_points()
-            self.view.pause()
+            View.pause()
             self.control = main_menu_controller.MainMenuController()
             return self.control()
         else:
@@ -77,11 +73,9 @@ class RoundsController:
         t_players = self.tournament_players_list()
         tab_t_players = []
         for player in t_players:
-                tab_t_players.append(ModelTemplate.get_serialized('PlayerModel', player.id))
+                tab_t_players.append(GetModelService.get_serialized('PlayerModel', player.id))
                 tab_t_players.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)
         return tab_t_players
-           
-
 
     def clear_players_points(self):
         t_players = self.tournament_players_list()
@@ -95,18 +89,18 @@ class RoundsController:
 
     def rounds_tab(self):
         title_menu = "Tournament : {}".format(self.tournament.name)
-        self.view.add_title_menu(title_menu)
+        View.add_title_menu(title_menu)
         tab_t_players = []
         t_players = self.tournament_players_list()
         for player in t_players:
-            tab_t_players.append(ModelTemplate.get_serialized('PlayerModel', player.id))
+            tab_t_players.append(GetModelService.get_serialized('PlayerModel', player.id))
         elements_columns = ['tournament_points', 'rank', 'first_name', 'last_name', 'id']
-        self.view.tab_view("Tournament Players", tab_t_players, elements_columns)
+        View.tab_view("Tournament Players", tab_t_players, elements_columns)
         tab_r_matchs = []
         match_nb = 1
         for matchs in self.rounds.matchs_list:
-            player1 = ModelTemplate.get_serialized('PlayerModel', matchs[0][0])
-            player2 = ModelTemplate.get_serialized('PlayerModel', matchs[1][0])
+            player1 = GetModelService.get_serialized('PlayerModel', matchs[0][0])
+            player2 = GetModelService.get_serialized('PlayerModel', matchs[1][0])
             tab_r_matchs.append(
                             {
                                 'match number': match_nb,
@@ -118,56 +112,44 @@ class RoundsController:
                             )
             match_nb += 1
         elements_columns = ['match number', 'player1', 'score1', 'player2', 'score2']
-        self.view.tab_view("Round {}".format(self.rounds.count), tab_r_matchs, elements_columns)
+        View.tab_view("Round {}".format(self.rounds.count), tab_r_matchs, elements_columns)
 
     def rounds_menu(self):
         self.rounds_tab()
         if not self.rounds.start:
-            self.view.add_menu_line("Start Round")
+            View.add_menu_line("Start Round")
         else:
-            self.view.add_menu_line("Finish Match ?")
-        self.view.add_menu_line("Manage players tournament")
-        self.view.add_menu_line("Quit")
-        self.select = self.view.get_choice()
-        if self.select not in ('1', '2', '3'):
-            pass
-        if self.select == '1':
+            View.add_menu_line("Finish Match ?")
+        View.add_menu_line("Manage players tournament")
+        View.add_menu_line("Quit")
+        choice = TestService.test_alpha(test_element=('1', '2', '3'))
+        if choice == '1':
             if not self.rounds.start:
                 self.rounds.start = True
                 self.rounds.update('start', self.rounds.start)
                 self.rounds.date_start = time.strftime("%d/%m/%Y %H:%M:%S")
                 self.rounds.update('date_start', self.rounds.date_start)
-            else:
-                while True:
-                    choice = self.view.request("Enter match number or Q for quit: ").upper()
-                    if choice == 'Q':
-                        break
-                    try:
-                        choice = int(choice) - 1
-                    except ValueError:
-                        continue
-                    if choice not in range(len(self.rounds.matchs_list)) or choice in self.rounds.finish_matchs:
-                        continue
-                    else:
-                        while True:
-                            result = self.view.request("Enter 1 : player1_win, 2 : player2_win, 3 : draw")
-                            if result not in ('1', '2', '3'):
-                                continue
-                            else:
-                                self.match_management(choice, result)
-                                break
-                    break
-        if self.select == '2':
+            else:   
+                choice = TestService.test_num(
+                                                title="Enter match number: ",
+                                                modif_num = -1,
+                                                test_range_element=len(self.rounds.matchs_list),
+                                                test_not_element=self.rounds.finish_matchs
+                                            )
+                result = TestService.test_alpha(
+                                                title="Enter 1 : player1_win, 2 : player2_win, 3 : draw",
+                                                test_element=('1', '2', '3')
+                                            )
+                self.match_management(choice, result)
+        if choice == '2':
             t_players = self.tournament_players_list()
             self.control = manage_player_controller.ManagePlayerController()
             self.control.modify_player(t_players)
-        if self.select == '3':
-            while True:
-                choice = self.view.request("quit by deleting the tournament? (Y or N)").upper()
-                if choice not in ('Y', 'N'):
-                    continue
-                else:
-                    break
+        if choice == '3':
+            choice = TestService.test_alpha(
+                                            title="quit by deleting the tournament? (Y or N)",
+                                            test_element=('Y', 'N')
+                                            )
             if choice == 'Y':
                 t_players = self.tournament_players_list()
                 t_rounds = self.tournament_rounds_list()

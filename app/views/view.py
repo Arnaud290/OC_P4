@@ -5,56 +5,47 @@ from pandas import DataFrame
 
 class View:
     """General view class"""
-    def __init__(self):
-        self.choice = ''
-
-    def get_choice(self):
+    key = None 
+    @classmethod
+    def get_choice(cls):
         """user get choice method"""
-        self.choice = input(">> ")
-        return self.choice
-
+        choice = input(">> ")
+        return choice
     @staticmethod
-    def clear():
+    def _clear():
         """clear screen method"""
         os.system('cls' if os.name == 'nt' else 'clear')
-
-    def add_title_menu(self, title):
+    @classmethod
+    def add_title_menu(cls, title):
         """value for title menu"""
-        self.clear()
-        self._title = title
-        stars = '*'*len(self._title)
+        cls._clear()
+        stars = '*'*len(title)
         print()
         print(stars)
-        print(self._title)
+        print(title)
         print(stars)
         print()
-        self.key = 1
-
-    def add_menu_line(self, value):
+        cls.key = 1
+    @classmethod
+    def add_menu_line(cls, value):
         """options and values for menu lines"""
-        print("{} : {}".format(self.key, value))
+        print("{} : {}".format(cls.key, value))
         print()
-        self.key += 1
-
-    def choice_menu(self):
-        """user select choice method"""
-        print()
-        choice = self.get_choice()
-        return choice
-
-    def quit(self):
+        cls.key += 1
+    @classmethod
+    def quit(cls):
         """screen quit method"""
-        self.clear()
-
-    def request(self, question):
+        cls._clear()
+    @classmethod
+    def request(cls, question):
         """ask questions method"""
         print()
         print(question)
         print()
-        choice = self.get_choice()
+        choice = cls.get_choice()
         return choice
-
-    def tab_view(self, title, elements_list, elements_columns):
+    @classmethod
+    def tab_view(cls, title, elements_list, elements_columns):
         """table view method"""
         print()
         print(title)
@@ -63,17 +54,17 @@ class View:
         index = []
         for element in elements_list:
             index.append('')
-        self.tab = DataFrame(elements_list, index=index, columns=elements_columns)
+        tab = DataFrame(elements_list, index=index, columns=elements_columns)
         if elements_list:
-            print(self.tab)
+            print(tab)
         print()
         print()
-
-    def indication(self, indication):
+    @classmethod
+    def indication(cls, indication):
         """display indications method"""
         print()
         print(indication)
-
-    def pause(self):
+    @classmethod
+    def pause(cls):
         """display pause method"""
         input("\nPress enter to continue")
