@@ -45,37 +45,33 @@ class TestService:
             else:
                 if modif_num:
                     test += modif_num
-                if positif_num:
-                    if test <= 0:
-                        View.indication('the number must be positif')
-                        View.pause()
-                        continue
-                if even_test:
-                    if test %2 != 0:
-                        View.indication('the number must be an even number')
-                        View.pause()
-                        continue
-                if test_element and not test_not_element:
+                if test_element:
                     if test in test_element:
-                        return test
+                        pass
                     else:
                         continue
-                if test_element and test_not_element:
-                    if test in test_element and test not in test_not_element:
-                        return test
-                    else:
-                        continue
-                if not test_element and test_not_element:
+                if test_not_element:
                     if test not in test_not_element:
-                        return test
+                        pass
                     else:
                         continue
                 if test_range_element:
                     if test not in range(test_range_element):
                         continue
                     else:
-                        return test
-                else:
-                    return test
-            
-
+                        pass
+                if even_test:
+                    if test %2 != 0:
+                        View.indication('the number must be an even number')
+                        View.pause()
+                        continue
+                    else:
+                        pass
+                if positif_num:
+                    if test <= 0:
+                        View.indication('the number must be positif')
+                        View.pause()
+                        continue
+                    else:
+                        pass
+                return test

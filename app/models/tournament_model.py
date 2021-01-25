@@ -3,6 +3,7 @@ import time
 from .model import Model
 from .. import services
 
+
 class TournamentModel(Model):
     """Tournament model class"""
     def __init__(self, **attributs):
@@ -17,7 +18,7 @@ class TournamentModel(Model):
         self.time_control = None
         self.description = None
         self.in_progress = False
-        self.tab_results = []
+        self.results = []
         if attributs:
             for attr_name, attr_value in attributs.items():
                 setattr(self, attr_name, attr_value)

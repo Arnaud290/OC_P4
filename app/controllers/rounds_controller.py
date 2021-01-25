@@ -7,6 +7,9 @@ from ..services.get_model_service import GetModelService
 from ..models.player_model import PlayerModel
 from . import manage_player_controller
 from ..services.test_service import TestService
+from ..services.table_service import TableService
+from ..services.match_service import MatchService
+
 
 class RoundsController:
     """Rounds control class"""
@@ -17,6 +20,7 @@ class RoundsController:
         self.control = None
         self.rounds = None
         self.delete_tournament = False
+        self.tab_r_matchs = []
         self.rounds_engine()
 
     def tournament_players_list(self):
@@ -26,10 +30,10 @@ class RoundsController:
         return t_players
 
     def tournament_rounds_list(self):
-        t_rounds = []
-        for round_model in self.tournament.round_list:
-            t_rounds.append(GetModelService.get_model('RoundModel', round_model))
-        return t_rounds
+        rounds = []
+        for id_round in self.tournament.round_list:
+            rounds.append(GetModelService.get_model('RoundModel', id_round))
+        return rounds
 
     def rounds_engine(self):
         """Round menu method"""
@@ -53,9 +57,13 @@ class RoundsController:
         if not t_rounds and self.in_progress:
             title_menu = "Tournament : {} is finish !".format(self.tournament.name)
             View.add_title_menu(title_menu)
+            TableService.table(
+                                title='Results',
+                                columns=['first_name', 'last_name', 'tournament_points', 'rank'],
+                                table=self.results(),
+                                select_sort='tournament_points'
+                                )
             t_players = self.tournament_players_list()
-            elements_columns = ['first_name', 'last_name', 'tournament_points', 'rank']
-            View.tab_view("Tournament Players", self.tournament.tab_results , elements_columns)
             for player in t_players:
                 player.tournament_points = 0.0
                 player.update('tournament_points', player.tournament_points)
@@ -69,7 +77,7 @@ class RoundsController:
             self.control = main_menu_controller.MainMenuController()
             return self.control()
 
-    def tab_results(self):
+    def results(self):
         t_players = self.tournament_players_list()
         tab_t_players = []
         for player in t_players:
@@ -94,25 +102,16 @@ class RoundsController:
         t_players = self.tournament_players_list()
         for player in t_players:
             tab_t_players.append(GetModelService.get_serialized('PlayerModel', player.id))
-        elements_columns = ['tournament_points', 'rank', 'first_name', 'last_name', 'id']
-        View.tab_view("Tournament Players", tab_t_players, elements_columns)
-        tab_r_matchs = []
-        match_nb = 1
-        for matchs in self.rounds.matchs_list:
-            player1 = GetModelService.get_serialized('PlayerModel', matchs[0][0])
-            player2 = GetModelService.get_serialized('PlayerModel', matchs[1][0])
-            tab_r_matchs.append(
-                            {
-                                'match number': match_nb,
-                                'player1': player1['first_name'] + ' ' + player1['last_name'],
-                                'score1': matchs[0][1],
-                                'player2': player2['first_name'] + ' ' + player2['last_name'],
-                                'score2': matchs[1][1]
-                            }
-                            )
-            match_nb += 1
-        elements_columns = ['match number', 'player1', 'score1', 'player2', 'score2']
-        View.tab_view("Round {}".format(self.rounds.count), tab_r_matchs, elements_columns)
+        TableService.table(
+                            title="Tournament Players",
+                            columns=['tournament_points', 'rank', 'first_name', 'last_name', 'id'],
+                            table=tab_t_players
+                        )
+        TableService.table(
+                            title="Round {}".format(self.rounds.count),
+                            columns=['id', 'player1', 'score1', 'player2', 'score2'],
+                            table=MatchService.match_list_tab(self.rounds.matchs_list)
+                        )
 
     def rounds_menu(self):
         self.rounds_tab()
@@ -136,8 +135,11 @@ class RoundsController:
                                                 test_range_element=len(self.rounds.matchs_list),
                                                 test_not_element=self.rounds.finish_matchs
                                             )
+                player_1 = MatchService.match_list_tab(self.rounds.matchs_list)[choice]['player1']
+                player_2 = MatchService.match_list_tab(self.rounds.matchs_list)[choice]['player2']
+                title = "Enter\n1: {} win\n2: {} win\n3: draw".format(player_1, player_2)
                 result = TestService.test_alpha(
-                                                title="Enter 1 : player1_win, 2 : player2_win, 3 : draw",
+                                                title=title,
                                                 test_element=('1', '2', '3')
                                             )
                 self.match_management(choice, result)
@@ -164,11 +166,9 @@ class RoundsController:
 
     def create_rounds_matchs(self):
         """create matchs round method"""
-        t_players_id = []
         p_match = self.tournament_players_list()
+        t_players_id = GetModelService.get_models_id(p_match)
         p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
-        for player in p_match:
-            t_players_id.append(player.id)
         for player in p_match:
             player.no_vs = []
             for id_player in t_players_id:
@@ -276,5 +276,5 @@ class RoundsController:
             self.rounds.update('finish', self.rounds.finish)
             self.rounds.date_finish = time.strftime("%d/%m/%Y %H:%M:%S")
             self.rounds.update('date_finish', self.rounds.date_finish)
-            self.tournament.tab_results = self.tab_results()
-            self.tournament.update('tab_results', self.tournament.tab_results)
+            self.tournament.tab_results = self.results()
+            self.tournament.update('results', self.tournament.tab_results)

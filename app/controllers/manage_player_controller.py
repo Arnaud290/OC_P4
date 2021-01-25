@@ -4,69 +4,45 @@ from ..models.player_model import PlayerModel
 from ..services.get_model_service import GetModelService
 from ..views.view import View
 from ..services.test_service import TestService
+from ..services.table_service import TableService
 
 
 class ManagePlayerController:
     """Manage player control class"""
     def __call__(self):
         self.control = None
-        self.tab_players_title = "Id order"
-        self.tab_players_list = GetModelService.get_serialized('PlayerModel')
-        self.tab_players_columns = ['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank']
+        self.tab_sort = "Id order"
         self.manage_player_menu()
 
     def manage_player_menu(self):
         """Manage player menu method"""
-        select_sort = "Id order"
         while True:
             self.actual_players_list = GetModelService.get_model('PlayerModel')
             self.tab_players_list = GetModelService.get_serialized('PlayerModel')
             View.add_title_menu("MANAGE PLAYERS")
-            self.tab_players_list = self.tab_sort(self.tab_players_list, select_sort)
-            if self.tab_players_list:
-                View.tab_view(self.tab_players_title, self.tab_players_list, self.tab_players_columns)
-            if self.tab_players_title == "Id order":
-                    View.add_menu_line("For alphabetical order")
-            if self.tab_players_title == "Aphabetical order":  
-                View.add_menu_line("For rank order")
-            if self.tab_players_title == "Rank order":
-                View.add_menu_line("For id order")    
+            TableService.table(
+                                title=self.tab_sort,
+                                columns=['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank'],
+                                table = GetModelService.get_serialized('PlayerModel'),
+                                select_sort=self.tab_sort
+                            )
+            TableService.table_sort_menu('player_table', self.tab_sort)
             View.add_menu_line("Create player")
             View.add_menu_line("modify player")
             View.add_menu_line("Quit")
             choice = TestService.test_alpha(test_element=('1', '2', '3', '4'))
             if choice == '1':
-                if select_sort == "Id order":
-                    self.tab_players_title = "Aphabetical order"
-                    select_sort = "Aphabetical order"
-                    continue
-                if select_sort == "Aphabetical order":
-                    self.tab_players_title = "Rank order"
-                    select_sort = "Rank order"
-                    continue
-                if select_sort == "Rank order":
-                    self.tab_players_title = "Id order"
-                    select_sort = "Id order"
-                    continue
-            if choice  == '2':
+                self.tab_sort = TableService.table_sort_select('player_table', self.tab_sort)
+            if choice == '2':
                 self.create_player()
                 continue
-            if choice  == '3':
+            if choice == '3':
                 self.modify_player(self.actual_players_list)
                 continue
-            if choice  == '4':
+            if choice == '4':
                 break
         self.control = main_menu_controller.MainMenuController()
         return self.control()
-
-    def tab_sort(self, tab, select_sort):
-        if select_sort == "Id order": 
-            tab = sorted(tab, key=lambda x: x['id'], reverse=False)       
-        if select_sort == "Aphabetical order":
-            tab = sorted(tab, key=lambda item: item.get('last_name'), reverse=False)    
-        if select_sort == "Rank order":
-            tab = sorted(tab,key=lambda x: x['rank'], reverse=True)  
-        return tab
 
     def create_player(self):
         """Create player method"""
@@ -81,11 +57,10 @@ class ManagePlayerController:
 
     def modify_player(self, players_model):
         """Manage player method"""
-        players_id = []
-        for player in players_model:
-            players_id.append(player.id)
-        player_id = TestService.test_num("Enter player id", players_id)
+        players_id = GetModelService.get_models_id(players_model)
+        player_id = TestService.test_num("Enter player id", test_element=players_id)
         player = GetModelService.get_model('PlayerModel', player_id)
+       
         View.indication("Actual first name: {}".format(player.first_name))
         change = View.request("change first name or enter:").capitalize()
         if change:

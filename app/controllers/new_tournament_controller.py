@@ -9,7 +9,7 @@ from ..views.view import View
 from ..config import settings
 from .manage_player_controller import ManagePlayerController
 from ..services.test_service import TestService
-
+from ..services.table_service import TableService
 
 class NewTournamentController:
     """main menu control class"""
@@ -64,7 +64,6 @@ class NewTournamentController:
             self.tournament.nb_rounds = choice
         else:
             self.tournament.nb_rounds = settings.NB_ROUNDS
-        print()
         choice = TestService.test_alpha(title="Time control (1: 'bullet', 2: 'blitz' 3: 'coup rapide') : ",
                                         test_element=('1', '2', '3')
                                     )
@@ -75,16 +74,14 @@ class NewTournamentController:
         if choice == '3':
             self.tournament.time_control = 'coup rapide'
         self.tournament.description = View.request("Description :")
+        self.tournament.in_progress = True
         self.tournament.save()
         self.manage_players_tournament()
     def manage_players_tournament(self):
         """create, add or delete players for tournament method"""
         id_players_tournament_list = self.tournament.player_list
         while True:
-            id_all_players = []
-            players_model = GetModelService.get_model('PlayerModel')
-            for player in players_model:
-                id_all_players.append(player.id)
+            id_all_players = GetModelService.get_models_id(GetModelService.get_model('PlayerModel'))
             tab_players_list = []
             tab_tournament_players = []
             tab_players_list = GetModelService.get_serialized('PlayerModel')
@@ -92,9 +89,16 @@ class NewTournamentController:
                 tab_tournament_players.append(GetModelService.get_serialized('PlayerModel', player_id))
                 tab_players_list.remove(GetModelService.get_serialized('PlayerModel', player_id))
             View.add_title_menu("TOURNAMENT PLAYERS")
-            elements_columns = ['id', 'first_name', 'last_name', 'rank']
-            View.tab_view("List of players to add", tab_players_list, elements_columns)
-            View.tab_view("List of players in tournament", tab_tournament_players, elements_columns)
+            TableService.table(
+                                title="List of players to add",
+                                columns=['id', 'first_name', 'last_name', 'rank'],
+                                table=tab_players_list
+                                )
+            TableService.table(
+                                title="List of players in tournament",
+                                columns=['id', 'first_name', 'last_name', 'rank'],
+                                table=tab_tournament_players
+                                ) 
             View.add_menu_line("Create Player")
             View.add_menu_line("Modify player")
             View.add_menu_line("Select player for tournament")
@@ -107,7 +111,7 @@ class NewTournamentController:
                 self.control.create_player()
             if choice == '2':
                 self.control = ManagePlayerController()
-                self.control.modify_player(players_model)
+                self.control.modify_player(GetModelService.get_model('PlayerModel'))
             if choice == '3':
                 id_player = TestService.test_num(
                                                     title="Enter player id to add: ",
