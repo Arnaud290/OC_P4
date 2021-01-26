@@ -32,11 +32,11 @@ class TestService:
                     ):
         """test for nums inputs"""
         while True:
-            if title:
+            if title is not None:
                 test = View.request(title)
             else:
                  test = View.get_choice
-            if not test and not test_loop:
+            if test == '' and not test_loop:
                 return None  
             try:
                 test = abs(int(test))
@@ -45,17 +45,17 @@ class TestService:
             else:
                 if modif_num:
                     test += modif_num
-                if test_element:
+                if test_element is not None:
                     if test in test_element:
                         pass
                     else:
                         continue
-                if test_not_element:
+                if test_not_element is not None:
                     if test not in test_not_element:
                         pass
                     else:
                         continue
-                if test_range_element:
+                if test_range_element is not None:
                     if test not in range(test_range_element):
                         continue
                     else:

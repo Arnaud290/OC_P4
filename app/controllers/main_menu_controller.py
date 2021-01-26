@@ -1,5 +1,5 @@
 """main menu control module"""
-from .new_tournament_controller import NewTournamentController
+from .tournament_controller import TournamentController
 from .manage_player_controller import ManagePlayerController
 from .rounds_controller import RoundsController
 from . import rapport_controller
@@ -24,13 +24,13 @@ class MainMenuController:
                 if self.actual_tournaments_list[-1].round_list:
                     self.control = RoundsController()
                 else:
-                    self.control = NewTournamentController()
+                    self.control = TournamentController()
             else:
                 View.add_menu_line("New Tournament")
-                self.control = NewTournamentController()        
+                self.control = TournamentController()        
         else:
             View.add_menu_line("New Tournament")
-            self.control = NewTournamentController()
+            self.control = TournamentController()
         View.add_menu_line("Manage Players")
         View.add_menu_line("Rapports")
         View.add_menu_line("Quit")
