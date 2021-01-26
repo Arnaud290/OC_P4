@@ -1,5 +1,8 @@
 """Model recovery service"""
 from tinydb import TinyDB
+from ..models.tournament_model import TournamentModel
+from ..models.round_model import RoundModel
+from ..models.player_model import PlayerModel
 
 
 class GetModelService:
@@ -34,7 +37,12 @@ class GetModelService:
         """get instance with instance id or
         all instances with class model name"""
         serialized_models = cls.get_serialized(model)
-        class_model = eval(model)
+        if model == 'PlayerModel':
+            class_model = PlayerModel
+        if model == 'RoundModel':
+            class_model = RoundModel
+        if model == 'TournamentModel':
+            class_model = TournamentModel
         model_list = []
         if id_model is None:
             for serialized_model in serialized_models:

@@ -92,7 +92,7 @@ class RoundsController:
                 if choice is None:
                     pass
                 else:
-                    player_1 = MatchService.match_list_tablele(self.rounds.matchs_list)[choice]['player1']
+                    player_1 = MatchService.match_table(self.rounds.matchs_list)[choice]['player1']
                     player_2 = MatchService.match_table(self.rounds.matchs_list)[choice]['player2']
                     title = "Enter\n1: {} win\n2: {} win\n3: draw".format(player_1, player_2)
                     result_select = TestService.test_alpha(

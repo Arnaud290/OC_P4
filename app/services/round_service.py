@@ -27,7 +27,7 @@ class RoundService:
         TableService.table(
                             title="Round {}".format(rounds.count),
                             columns=['id', 'player1', 'score1', 'player2', 'score2'],
-                            table=match_service.MatchService.match_list_tablele(rounds.matchs_list)
+                            table=match_service.MatchService.match_table(rounds.matchs_list)
                         )
 
     @classmethod
