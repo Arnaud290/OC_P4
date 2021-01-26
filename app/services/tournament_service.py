@@ -49,8 +49,8 @@ class TournamentService:
     def create_tournament(cls):
         tournament = TournamentModel()
         View.add_title_menu("CREATE TOURNAMENT")
-        tournament.name = View.request("Name :")
-        tournament.location = View.request("Location :")
+        tournament.name = TestService.test_alpha(title="Name :", test_loop=True)
+        tournament.location = TestService.test_alpha(title="Location :", test_loop=True)
         choice = TestService.test_num(
                                 title=("Number players (default {}) : ".format(settings.NB_PLAYERS)),
                                 test_loop=False,

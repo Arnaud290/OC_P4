@@ -44,36 +44,3 @@ class ManagePlayerController:
                 break
         self.control = main_menu_controller.MainMenuController()
         return self.control()
-
-    #def modify_player(self, players_model):
-    #    """Manage player method"""
-    #    players_id = GetModelService.get_models_id(players_model)
-    #    player_id = TestService.test_num("Enter player id", test_element=players_id, test_loop=False)
-    #    if player_id is None:
-    #        pass
-    #    else:
-    #        player = GetModelService.get_model('PlayerModel', player_id)
-    #        View.indication("Actual first name: {}".format(player.first_name))
-    #        change = View.request("change first name or enter:").capitalize()
-    #        if change:
-    #            player.update('first_name', change)
-    #        View.indication("Actual last name: {}".format(player.last_name))
-    #        change = View.request("change last last name or enter:").capitalize()
-    #        if change:
-    #            player.update('last_name', change)
-    #        View.indication("Actual birth date: {}".format(player.birth_date))
-    #        change = View.request("change birth date (jj/mm//aaaa) or enter:")
-    #        if change:
-    #            player.update('birth_date', change)
-    #        View.indication("Actual sex: {}".format(player.sex))
-    #        change = TestService.test_alpha(
-    #                                        title="Change sex (M or F) or enter: ",
-    #                                        test_element=('M', 'F'),
-    #                                        test_loop= False
-    #                                        )
-    #        if change:
-    #            player.update('sex', change)
-    #        View.indication("Actual rank: {}".format(player.rank))
-    #        change = TestService.test_num("change rank or enter: ", test_loop= False)
-    #        if change:
-    #            player.update('rank', change)

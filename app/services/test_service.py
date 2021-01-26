@@ -5,19 +5,26 @@ class TestService:
     """Class for all tests user input"""
     result = None
     @classmethod
-    def test_alpha(cls, test_element, title=None, test_loop=True):
+    def test_alpha(cls, test_element=None, title=None, test_loop=True):
         """ test for alpha inputs"""
         while True:
             if title:
-                test = View.request(title).upper()
+                test = View.request(title).capitalize()
             else:
-                test = View.get_choice().upper()
-            if not test and not test_loop:
-                return None
-            if test in test_element:
+                test = View.get_choice().capitalize()
+            if test == '' and test_loop is False:
+               return None
+            if test == '' and test_loop:
+                continue
+            if test_element:
+                if test in test_element:
+                    return test
+                    pass
+                else:
+                    continue
+            else:
                 return test
-            else:
-                continue 
+
     @classmethod  
     def test_num(
                     cls,

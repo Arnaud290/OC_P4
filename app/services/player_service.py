@@ -16,13 +16,13 @@ class PlayerService:
         if not player.first_name:
             player.delete()
             pass
-        else:
-            player.last_name = View.request("Enter last name:").capitalize()
+        else: 
+            player.last_name = TestService.test_alpha(title="Enter last name:", test_loop=True)
+            player.last_name.capitalize()
             player.birth_date = View.request("Enter birth date (jj/mm//aaaa):")
             player.sex = TestService.test_alpha(title="Enter sex (M or F): ", test_element=('M', 'F'))
             player.rank = TestService.test_num(title="Enter rank: ")
             player.save()
-
     @classmethod
     def modify_player(cls, players_model_list):
         """Manage player method"""
@@ -48,12 +48,12 @@ class PlayerService:
             change = TestService.test_alpha(
                                             title="Change sex (M or F) or enter: ",
                                             test_element=('M', 'F'),
-                                            test_loop= False
+                                            test_loop=False
                                             )
             if change:
                 player.update('sex', change)
             View.indication("Actual rank: {}".format(player.rank))
-            change = TestService.test_num("change rank or enter: ", test_loop= False)
+            change = TestService.test_num("change rank or enter: ", test_loop=False)
             if change:
                 player.update('rank', change)
    
