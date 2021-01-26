@@ -1,9 +1,11 @@
-"""Test service module"""
+"""alpha and numeric test service module"""
 from ..views.view import View
+
 
 class TestService:
     """Class for all tests user input"""
     result = None
+
     @classmethod
     def test_alpha(cls, test_element=None, title=None, test_loop=True):
         """ test for alpha inputs"""
@@ -13,7 +15,7 @@ class TestService:
             else:
                 test = View.get_choice().capitalize()
             if test == '' and test_loop is False:
-               return None
+                return None
             if test == '' and test_loop:
                 continue
             if test_element:
@@ -25,7 +27,7 @@ class TestService:
             else:
                 return test
 
-    @classmethod  
+    @classmethod
     def test_num(
                     cls,
                     title=None,
@@ -36,15 +38,15 @@ class TestService:
                     even_test=False,
                     positif_num=False,
                     modif_num=None
-                    ):
-        """test for nums inputs"""
+                ):
+        """test for numeric inputs"""
         while True:
             if title is not None:
                 test = View.request(title)
             else:
-                 test = View.get_choice
+                test = View.get_choice
             if test == '' and not test_loop:
-                return None  
+                return None
             try:
                 test = abs(int(test))
             except ValueError:
@@ -68,7 +70,7 @@ class TestService:
                     else:
                         pass
                 if even_test:
-                    if test %2 != 0:
+                    if test % 2 != 0:
                         View.indication('the number must be an even number')
                         View.pause()
                         continue

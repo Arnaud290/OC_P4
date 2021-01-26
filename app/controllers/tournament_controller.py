@@ -1,27 +1,20 @@
-"""main menu control module"""
+"""Tournament control module"""
 from . import main_menu_controller
 from ..services.get_model_service import GetModelService
-from ..models.tournament_model import TournamentModel
-from ..models.player_model import PlayerModel
-from ..models.round_model import RoundModel
 from .rounds_controller import RoundsController
 from ..views.view import View
-from ..config import settings
-from .manage_player_controller import ManagePlayerController
 from ..services.test_service import TestService
-from ..services.table_service import TableService
-from ..services.player_service import PlayerService
 from ..services.tournament_service import TournamentService
 
 
 class TournamentController:
-    """main menu control class"""
+    """Tournament control class"""
     def __call__(self):
         self.control = None
         self.tournament_menu()
 
     def tournament_menu(self):
-        """New tournament menu method"""
+        """Method to manage the tournament menu"""
         self.actual_tournaments_list = GetModelService.get_model('TournamentModel')
         if self.actual_tournaments_list:
             if self.actual_tournaments_list[-1].in_progress:

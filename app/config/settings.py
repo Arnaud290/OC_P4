@@ -1,4 +1,4 @@
-"""settings module"""
+"""Settings module"""
 
 # Default number player at new tournament
 NB_PLAYERS = 8

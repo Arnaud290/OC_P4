@@ -1,11 +1,11 @@
-"""Tournament service module"""
+"""Service module for tournaments"""
 from .get_model_service import GetModelService
 from ..models.tournament_model import TournamentModel
 from ..views.view import View
 from .test_service import TestService
 from .table_service import TableService
 from .player_service import PlayerService
-from . import match_service 
+from . import match_service
 from ..config import settings
 from . import round_service
 
@@ -13,6 +13,8 @@ from . import round_service
 class TournamentService:
     @classmethod
     def tournament_players_list(cls, tournament):
+        """method that returns the list of
+        models of players in a tournament"""
         t_players = []
         for player in tournament.player_list:
             t_players.append(GetModelService.get_model('PlayerModel', player))
@@ -20,6 +22,8 @@ class TournamentService:
 
     @classmethod
     def tournament_rounds_list(cls, tournament):
+        """method that returns the list of
+        rounds of players in a tournament"""
         rounds = []
         for id_round in tournament.round_list:
             rounds.append(GetModelService.get_model('RoundModel', id_round))
@@ -27,15 +31,18 @@ class TournamentService:
 
     @classmethod
     def tournament_results_table(cls, tournament):
+        """Table creation method for tournament results"""
         t_players = cls.tournament_players_list(tournament)
         tab_t_players = []
         for player in t_players:
-                tab_t_players.append(GetModelService.get_serialized('PlayerModel', player.id))
-                tab_t_players.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)
+            tab_t_players.append(GetModelService.get_serialized('PlayerModel', player.id))
+            tab_t_players.sort(key=lambda x: (x['tournament_points'], x['rank']), reverse=True)
         return tab_t_players
 
     @classmethod
     def clear_tournament_players_points(cls, tournament):
+        """Method of erasing player
+        points after a tournament"""
         t_players = cls.tournament_players_list(tournament)
         for player in t_players:
             player.tournament_points = 0.0
@@ -47,6 +54,7 @@ class TournamentService:
 
     @classmethod
     def create_tournament(cls):
+        """method to create a tournament"""
         tournament = TournamentModel()
         View.add_title_menu("CREATE TOURNAMENT")
         tournament.name = TestService.test_alpha(title="Name :", test_loop=True)
@@ -71,11 +79,12 @@ class TournamentService:
             tournament.nb_rounds = choice
         else:
             tournament.nb_rounds = settings.NB_ROUNDS
-        choice = TestService.test_alpha(title="Time control (1: 'bullet', 2: 'blitz' 3: 'coup rapide') : ",
+        choice = TestService.test_alpha(
+                                        title="Time control (1: 'bullet', 2: 'blitz' 3: 'coup rapide') : ",
                                         test_element=('1', '2', '3')
                                     )
         if choice == '1':
-            tournament.time_control = 'bullet' 
+            tournament.time_control = 'bullet'
         if choice == '2':
             tournament.time_control = 'blitz'
         if choice == '3':
@@ -87,7 +96,7 @@ class TournamentService:
 
     @classmethod
     def manage_tournament(cls, tournament):
-        """create, add or delete players for tournament method"""
+        """method to manage a tournament before departure"""
         id_players_tournament_list = tournament.player_list
         while True:
             id_all_players = GetModelService.get_models_id(GetModelService.get_model('PlayerModel'))
@@ -107,7 +116,7 @@ class TournamentService:
                                 title="List of players in tournament",
                                 columns=['id', 'first_name', 'last_name', 'rank'],
                                 table=tab_tournament_players
-                                ) 
+                                )
             View.add_menu_line("Create Player")
             View.add_menu_line("Modify player")
             View.add_menu_line("Select player for tournament")
@@ -127,10 +136,10 @@ class TournamentService:
                                                     test_element=id_all_players,
                                                     test_not_element=tournament.player_list,
                                                     test_loop=False
-                                                ) 
+                                                )
                 if id_player is None:
                     continue
-                else:                            
+                else:
                     id_players_tournament_list.append(id_player)
                     tournament.player_list = id_players_tournament_list
                     tournament.update('player_list', id_players_tournament_list)
@@ -143,7 +152,7 @@ class TournamentService:
                                                 )
                 if id_player is None:
                     continue
-                else:                                      
+                else:
                     id_players_tournament_list.remove(id_player)
                     tournament.player_list = id_players_tournament_list
                     tournament.update('player_list', id_players_tournament_list)
@@ -160,7 +169,7 @@ class TournamentService:
                                             )
                 if choice is None:
                     continue
-                else:                            
+                else:
                     if choice == 'Y':
                         round_service.RoundService.create_rounds(tournament)
                         return True
@@ -171,7 +180,7 @@ class TournamentService:
                                                     title="quit by deleting the tournament? (Y or N)",
                                                     test_element=('Y', 'N'),
                                                     test_loop=False
-                                                ) 
+                                                )
             if choice is None:
                 continue
             else:
@@ -182,9 +191,11 @@ class TournamentService:
                     tournament.update('in_progress', tournament.in_progress)
                 return False
 
-    @classmethod                 
+    @classmethod
     def select_tournament(cls):
-        tournament_list =  GetModelService.get_model('TournamentModel')
+        """Method to select the model
+        of a tournament with its id"""
+        tournament_list = GetModelService.get_model('TournamentModel')
         choice = TestService.test_num(
                                     title="Enter id of tournament",
                                     test_range_element=len(tournament_list),
@@ -198,6 +209,8 @@ class TournamentService:
 
     @classmethod
     def table_of_tournament_players(cls, tournament):
+        """Method to create a table
+        of players in a tournament"""
         table_sort = "Alphabetical order"
         while True:
             View.add_title_menu("PLAYERS LIST OF TOURNAMENT {}".format(tournament.name))
@@ -217,6 +230,8 @@ class TournamentService:
 
     @classmethod
     def table_of_tournament_rounds(cls, tournament):
+        """Method to create a table
+        of rounds of a tournament"""
         rounds_models_list = []
         tab_list = []
         rounds_list = GetModelService.get_model('RoundModel')
@@ -228,14 +243,12 @@ class TournamentService:
         match_tab_list = []
         while True:
             View.add_title_menu("ROUNDS LIST OF TOURNAMENT {}".format(tournament.name))
-            TableService.table( 
+            TableService.table(
                                 title="Rounds list",
                                 columns=['name', 'date_start', 'date_finish'],
                                 table=tab_list,
                                 select_sort='Round_name'
                             )
-            
-            
             TableService.table(
                                 title=match_tab_title,
                                 columns=['id', 'player1', 'score1', 'player2', 'score2'],
@@ -251,10 +264,10 @@ class TournamentService:
                                             modif_num=-1,
                                             test_range_element=len(tournament.round_list),
                                             test_loop=False
-                                            )    
+                                            )
                 if choice is None:
-                    continue 
+                    continue
                 match_tab_title = rounds_models_list[choice].name
-                match_tab_list = match_service.MatchService.match_list_tab(rounds_models_list[choice - 1].matchs_list)
+                match_tab_list = match_service.MatchService.match_table(rounds_models_list[choice - 1].matchs_list)
             if choice == '2':
                 break

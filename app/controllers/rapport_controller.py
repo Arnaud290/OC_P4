@@ -1,21 +1,17 @@
-"""rapport control module"""
+"""Rapport control module"""
 from . import main_menu_controller
 from ..views.view import View
-from ..models.player_model import PlayerModel
-from ..models.tournament_model import TournamentModel
-from ..models.round_model import RoundModel
 from ..services.get_model_service import GetModelService
 from ..services.test_service import TestService
 from ..services.table_service import TableService
-from ..services.match_service import MatchService
 from ..services.tournament_service import TournamentService
+
 
 class RapportController:
     """Rapport control class"""
     def __call__(self):
         self.control = None
         self.actual_tournaments_list = GetModelService.get_model('TournamentModel')
-      
         self.title_table = None
         self.table = []
         self.table_columns = []
@@ -23,7 +19,8 @@ class RapportController:
         self.rapport_menu()
 
     def rapport_menu(self):
-        """Main menu méthod"""
+        """Management method of the
+        report management menu"""
         while True:
             View.add_title_menu("RAPPORTS")
             TableService.table(
@@ -37,7 +34,7 @@ class RapportController:
                                         'nb_rounds',
                                         'time_control',
                                         'description',
-                                        ],  
+                                        ],
                                 table=GetModelService.get_serialized('TournamentModel')
             )
             View.add_menu_line("List of tournament players")

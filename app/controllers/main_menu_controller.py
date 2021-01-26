@@ -1,4 +1,4 @@
-"""main menu control module"""
+"""Main menu control module"""
 from .tournament_controller import TournamentController
 from .manage_player_controller import ManagePlayerController
 from .rounds_controller import RoundsController
@@ -9,14 +9,14 @@ from ..services.test_service import TestService
 
 
 class MainMenuController:
-    """main menu control class"""
+    """Main menu control class"""
     def __call__(self):
         self.control = None
         self.actual_tournaments_list = GetModelService.get_model("TournamentModel")
         self.main_menu()
-        
+
     def main_menu(self):
-        """Main menu method"""
+        """Main menu management method"""
         View.add_title_menu("CHESS MAIN MENU")
         if self.actual_tournaments_list:
             if self.actual_tournaments_list[-1].in_progress:
@@ -27,7 +27,7 @@ class MainMenuController:
                     self.control = TournamentController()
             else:
                 View.add_menu_line("New Tournament")
-                self.control = TournamentController()        
+                self.control = TournamentController()
         else:
             View.add_menu_line("New Tournament")
             self.control = TournamentController()

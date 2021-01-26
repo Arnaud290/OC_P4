@@ -1,4 +1,4 @@
-"""Round service module"""
+"""Service module for rounds"""
 from ..models.round_model import RoundModel
 from . import tournament_service
 from .get_model_service import GetModelService
@@ -12,6 +12,7 @@ class RoundService:
 
     @classmethod
     def round_table(cls, tournament, rounds):
+        """method of creating round tables"""
         title_menu = "Tournament : {}".format(tournament.name)
         View.add_title_menu(title_menu)
         tab_t_players = []
@@ -26,11 +27,12 @@ class RoundService:
         TableService.table(
                             title="Round {}".format(rounds.count),
                             columns=['id', 'player1', 'score1', 'player2', 'score2'],
-                            table=match_service.MatchService.match_list_tab(rounds.matchs_list)
-                        )   
+                            table=match_service.MatchService.match_list_tablele(rounds.matchs_list)
+                        )
 
     @classmethod
     def create_rounds(cls, tournament):
+        """round creation method"""
         rounds_nb = 1
         for nb_rounds in range(tournament.nb_rounds):
             round_game = RoundModel()

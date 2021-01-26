@@ -9,6 +9,7 @@ class ApplicationController:
         self.controller = MainMenuController()
 
     def start(self):
+        """Method of launching modules"""
         while self.controller:
             self.controller = self.controller()
         View.quit()

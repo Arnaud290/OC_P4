@@ -1,5 +1,6 @@
-"""player model module"""
+"""Player model module"""
 from .model import Model
+
 
 class PlayerModel(Model):
     """Player model class"""

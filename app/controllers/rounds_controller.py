@@ -1,17 +1,15 @@
-"""match control module"""
+"""Rounds control module"""
 import time
-import operator
 from . import main_menu_controller
 from ..views.view import View
 from ..services.get_model_service import GetModelService
-from ..models.player_model import PlayerModel
-from . import manage_player_controller
 from ..services.test_service import TestService
 from ..services.table_service import TableService
 from ..services.match_service import MatchService
 from ..services.tournament_service import TournamentService
 from ..services.round_service import RoundService
 from ..services.player_service import PlayerService
+
 
 class RoundsController:
     """Rounds control class"""
@@ -26,7 +24,7 @@ class RoundsController:
         self.rounds_engine()
 
     def rounds_engine(self):
-        """Round menu method"""
+        """Round engine method"""
         t_rounds = TournamentService.tournament_rounds_list(self.tournament)
         while t_rounds and self.tournament:
             self.rounds = t_rounds.pop(0)
@@ -68,6 +66,7 @@ class RoundsController:
             return self.control()
 
     def rounds_menu(self):
+        """Management method of the round menu"""
         RoundService.round_table(self.tournament, self.rounds)
         if not self.rounds.start:
             View.add_menu_line("Start Round")
@@ -82,10 +81,10 @@ class RoundsController:
                 self.rounds.update('start', self.rounds.start)
                 self.rounds.date_start = time.strftime("%d/%m/%Y %H:%M:%S")
                 self.rounds.update('date_start', self.rounds.date_start)
-            else:   
+            else:
                 choice = TestService.test_num(
                                                 title="Enter match number: ",
-                                                modif_num = -1,
+                                                modif_num=-1,
                                                 test_range_element=len(self.rounds.matchs_list),
                                                 test_not_element=self.rounds.finish_matchs,
                                                 test_loop=False
@@ -93,13 +92,13 @@ class RoundsController:
                 if choice is None:
                     pass
                 else:
-                    player_1 = MatchService.match_list_tab(self.rounds.matchs_list)[choice]['player1']
-                    player_2 = MatchService.match_list_tab(self.rounds.matchs_list)[choice]['player2']
+                    player_1 = MatchService.match_list_tablele(self.rounds.matchs_list)[choice]['player1']
+                    player_2 = MatchService.match_table(self.rounds.matchs_list)[choice]['player2']
                     title = "Enter\n1: {} win\n2: {} win\n3: draw".format(player_1, player_2)
                     result_select = TestService.test_alpha(
                                                     title=title,
                                                     test_element=('1', '2', '3')
-                                                )        
+                                                )
                     MatchService.management_match(self.tournament, self.rounds, choice, result_select)
         if choice == '2':
             t_players = TournamentService.tournament_players_list(self.tournament)

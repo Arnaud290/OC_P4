@@ -1,10 +1,10 @@
-"""round model module"""
+"""Round model module"""
 from .model import Model
 from .. import services
 
 
 class RoundModel(Model):
-    """round model class"""
+    """Round model class"""
     def __init__(self, **attributs):
         self.id = services.get_model_service.GetModelService.get_number('RoundModel')
         self.match_nb = 0

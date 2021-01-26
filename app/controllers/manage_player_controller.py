@@ -1,6 +1,5 @@
-"""manage player control module"""
+"""Manage player control module"""
 from . import main_menu_controller
-from ..models.player_model import PlayerModel
 from ..services.get_model_service import GetModelService
 from ..views.view import View
 from ..services.test_service import TestService
@@ -16,7 +15,8 @@ class ManagePlayerController:
         self.manage_player_menu()
 
     def manage_player_menu(self):
-        """Manage player menu method"""
+        """Management method of
+        the player management menu"""
         while True:
             self.actual_players_list = GetModelService.get_model('PlayerModel')
             self.tab_players_list = GetModelService.get_serialized('PlayerModel')
@@ -24,7 +24,7 @@ class ManagePlayerController:
             TableService.table(
                                 title=self.tab_sort,
                                 columns=['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank'],
-                                table = GetModelService.get_serialized('PlayerModel'),
+                                table=GetModelService.get_serialized('PlayerModel'),
                                 select_sort=self.tab_sort
                             )
             TableService.table_sort_menu('player_table', self.tab_sort)

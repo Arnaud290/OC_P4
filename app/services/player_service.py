@@ -4,6 +4,7 @@ from .get_model_service import GetModelService
 from ..views.view import View
 from .test_service import TestService
 
+
 class PlayerService:
     """Class of player service"""
 
@@ -16,13 +17,14 @@ class PlayerService:
         if not player.first_name:
             player.delete()
             pass
-        else: 
+        else:
             player.last_name = TestService.test_alpha(title="Enter last name:", test_loop=True)
             player.last_name.capitalize()
             player.birth_date = View.request("Enter birth date (jj/mm//aaaa):")
             player.sex = TestService.test_alpha(title="Enter sex (M or F): ", test_element=('M', 'F'))
             player.rank = TestService.test_num(title="Enter rank: ")
             player.save()
+
     @classmethod
     def modify_player(cls, players_model_list):
         """Manage player method"""
@@ -56,4 +58,3 @@ class PlayerService:
             change = TestService.test_num("change rank or enter: ", test_loop=False)
             if change:
                 player.update('rank', change)
-   

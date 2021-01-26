@@ -1,4 +1,4 @@
-"""tournament model module"""
+"""Tournament model module"""
 import time
 from .model import Model
 from .. import services

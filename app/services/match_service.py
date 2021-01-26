@@ -1,4 +1,4 @@
-"""Match list module"""
+"""service module for matchs"""
 import operator
 import time
 from .get_model_service import GetModelService
@@ -6,17 +6,17 @@ from .tournament_service import TournamentService
 
 
 class MatchService:
-    """Make match class"""
+    """class for match services"""
 
     @classmethod
-    def match_list_tab(cls, match_list):
-        """Create match list table method"""
-        match_list_tab = []
+    def match_table(cls, match_list):
+        """method to create a table of matchs"""
+        match_list_table = []
         match_nb = 1
         for matchs in match_list:
             player_1 = GetModelService.get_model('PlayerModel', matchs[0][0])
             player_2 = GetModelService.get_model('PlayerModel', matchs[1][0])
-            match_list_tab.append(
+            match_list_table.append(
                                 {
                                     'id': match_nb,
                                     'player1': player_1.first_name + ' ' + player_1.last_name,
@@ -26,11 +26,11 @@ class MatchService:
                                 }
                                 )
             match_nb += 1
-        return match_list_tab
+        return match_list_table
 
     @classmethod
     def create_matchs(cls, tournament, rounds):
-        """create matchs round method"""
+        """Method to create matches for a round"""
         p_match = TournamentService.tournament_players_list(tournament)
         t_players_id = GetModelService.get_models_id(p_match)
         p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
@@ -104,18 +104,17 @@ class MatchService:
                 else:
                     rounds.update('matchs_list', rounds.matchs_list)
                     break
-    
-    @classmethod                
+
+    @classmethod
     def management_match(cls, tournament, rounds, match_select, result_select):
-        """match management method"""   
-        tournament_players = TournamentService.tournament_players_list(tournament) 
+        """Method of managing a match during results"""
+        tournament_players = TournamentService.tournament_players_list(tournament)
         if result_select == '1':
             rounds.matchs_list[match_select][0][1] += 1
             for player in tournament_players:
                 if player.id == rounds.matchs_list[match_select][0][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
-
         if result_select == '2':
             rounds.matchs_list[match_select][1][1] += 1
             for player in tournament_players:

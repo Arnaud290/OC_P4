@@ -1,19 +1,17 @@
-"""Get model service module"""
-from tinydb import TinyDB, Query
-from ..models.player_model import PlayerModel
-from ..models.tournament_model import TournamentModel
-from ..models.round_model import RoundModel
+"""Model recovery service"""
+from tinydb import TinyDB
 
 
 class GetModelService:
     """Get model service class"""
     db = TinyDB('app/database/db.json')
+
     @classmethod
-    def get_serialized(cls, class_model, id_model = None):
-        """get all instances model"""
+    def get_serialized(cls, class_model, id_model=None):
+        """get the serialized model (s)"""
         table = cls.db.table(class_model)
         serialized_table = table.all()
-        if  id_model is None:    
+        if id_model is None:
             return serialized_table
         else:
             return serialized_table[id_model]
@@ -34,7 +32,7 @@ class GetModelService:
     @classmethod
     def get_model(cls, model, id_model=None):
         """get instance with instance id or
-        all instances with model name""" 
+        all instances with class model name"""
         serialized_models = cls.get_serialized(model)
         class_model = eval(model)
         model_list = []
@@ -44,7 +42,7 @@ class GetModelService:
             return model_list
         else:
             serialized_model = cls.get_serialized(model, id_model)
-            model_object = class_model(**serialized_model)   
+            model_object = class_model(**serialized_model)
             return model_object
 
     @classmethod

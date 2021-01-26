@@ -1,23 +1,27 @@
-"""base view module"""
+"""View module"""
 import os
 from pandas import DataFrame
 
 
 class View:
-    """General view class"""
-    key = None 
+    """View class"""
+    key = None
+
     @classmethod
     def get_choice(cls):
-        """user get choice method"""
+        """Method for creating
+        a prompt for users"""
         choice = input(">> ")
         return choice
+
     @staticmethod
     def _clear():
-        """clear screen method"""
+        """Private method to clear the screen"""
         os.system('cls' if os.name == 'nt' else 'clear')
+
     @classmethod
     def add_title_menu(cls, title):
-        """value for title menu"""
+        """Method of creating titles"""
         cls._clear()
         stars = '*'*len(title)
         print()
@@ -26,27 +30,34 @@ class View:
         print(stars)
         print()
         cls.key = 1
+
     @classmethod
     def add_menu_line(cls, value):
-        """options and values for menu lines"""
+        """Line opening method for menus
+        with automatic numbering"""
         print("{} : {}".format(cls.key, value))
         print()
         cls.key += 1
+
     @classmethod
     def quit(cls):
-        """screen quit method"""
+        """Method to clear the screen
+        when the program is stopped"""
         cls._clear()
+
     @classmethod
     def request(cls, question):
-        """ask questions method"""
+        """Method for displaying questions when
+        creating a model or executing a tournament"""
         print()
         print(question)
         print()
         choice = cls.get_choice()
         return choice
+
     @classmethod
     def tab_view(cls, title, elements_list, elements_columns):
-        """table view method"""
+        """Table display method"""
         print()
         print(title)
         print('_'*(len(title)))
@@ -59,12 +70,15 @@ class View:
             print(tab)
         print()
         print()
+
     @classmethod
     def indication(cls, indication):
-        """display indications method"""
+        """Method of displaying
+        indications to the user"""
         print()
         print(indication)
+
     @classmethod
     def pause(cls):
-        """display pause method"""
+        """Pause method"""
         input("\nPress enter to continue")
