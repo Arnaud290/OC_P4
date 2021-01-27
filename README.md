@@ -88,4 +88,7 @@ Ce logiciel s'exécute depuis une console sur Windows, Linux ou MacOs, il est co
 ### 3 - Génération d'un rapport FLAKE8
 
 
-            (env) $ flake8 --exclude env --max-line-length 119  --format=html --htmldir=flake8_rapport
+            1 - $ source env/bin/activate
+            2 - (env) $ flake8
+                
+            Le fichier .flake8 présent dans le repertoire contient la configuration de flake8
