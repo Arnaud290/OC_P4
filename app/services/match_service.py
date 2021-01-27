@@ -19,9 +19,9 @@ class MatchService:
             match_list_table.append(
                                 {
                                     'id': match_nb,
-                                    'player1': player_1.first_name + ' ' + player_1.last_name,
+                                    'player1': str(player_1.id) + '_' + player_1.first_name + ' ' + player_1.last_name,
                                     'score1': matchs[0][1],
-                                    'player2': player_2.first_name + ' ' + player_2.last_name,
+                                    'player2': str(player_2.id) + '_' + player_2.first_name + ' ' + player_2.last_name,
                                     'score2': matchs[1][1]
                                 }
                                 )

@@ -216,7 +216,7 @@ class TournamentService:
             View.add_title_menu("PLAYERS LIST OF TOURNAMENT {}".format(tournament.name))
             TableService.table(
                                 title=table_sort,
-                                columns=['first_name', 'last_name', 'tournament_points', 'rank'],
+                                columns=['id', 'first_name', 'last_name', 'tournament_points', 'rank'],
                                 table=tournament.results,
                                 select_sort=table_sort
                             )
