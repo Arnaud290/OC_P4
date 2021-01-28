@@ -21,12 +21,12 @@ class RoundService:
             tab_t_players.append(GetModelService.get_serialized('PlayerModel', player.id))
         TableService.table(
                             title="Tournament Players",
-                            columns=['tournament_points', 'rank', 'first_name', 'last_name', 'id'],
+                            columns=['tournament_points', 'rank', 'first_name', 'last_name', 'number'],
                             table=tab_t_players
                         )
         TableService.table(
                             title="Round {}".format(rounds.count),
-                            columns=['id', 'player1', 'score1', 'player2', 'score2'],
+                            columns=['number', 'player1', 'score1', 'player2', 'score2'],
                             table=match_service.MatchService.match_table(rounds.matchs_list)
                         )
 

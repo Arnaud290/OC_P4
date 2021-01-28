@@ -6,6 +6,7 @@ class PlayerModel(Model):
     """Player model class"""
     def __init__(self, **attributs):
         self.id = None
+        self.number = None
         self.first_name = None
         self.last_name = None
         self.birth_date = None

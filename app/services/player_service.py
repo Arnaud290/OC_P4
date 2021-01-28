@@ -13,6 +13,7 @@ class PlayerService:
         """Create player method"""
         player = PlayerModel()
         player.id = GetModelService.get_number('PlayerModel')
+        player.number = player.id + 1
         player.first_name = View.request("Enter first name:").capitalize()
         if not player.first_name:
             player.delete()
@@ -28,8 +29,13 @@ class PlayerService:
     @classmethod
     def modify_player(cls, players_model_list):
         """Manage player method"""
-        players_id = GetModelService.get_models_id(players_model_list)
-        player_id = TestService.test_num("Enter player id", test_element=players_id, test_loop=False)
+        #players_id = GetModelService.get_models_id(players_model_list)
+        player_id = TestService.test_num(
+                                            title="Enter player number",
+                                            test_range_element=len(players_model_list),
+                                            modif_num=-1,
+                                            test_loop=False
+                                        )
         if player_id is None:
             pass
         else:

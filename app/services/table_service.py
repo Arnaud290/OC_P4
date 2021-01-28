@@ -17,8 +17,8 @@ class TableService:
     def _sort(cls, table, select_sort):
         """Private method for
         sorting lists for arrays"""
-        if select_sort == "Id order":
-            table = sorted(table, key=lambda x: x['id'], reverse=False)
+        if select_sort == "Number order":
+            table = sorted(table, key=lambda x: x['number'], reverse=False)
         if select_sort == "Alphabetical order":
             table = sorted(table, key=lambda item: item.get('last_name'), reverse=False)
         if select_sort == "tournament_points":
@@ -34,34 +34,34 @@ class TableService:
         """method for sorting
         menu lines of tables"""
         if type_table == 'player_table':
-            if select_sort == "Id order":
-                View.add_menu_line("For Alphabetical order")
+            if select_sort == "Number order":
+                View.add_menu_line("Alphabetical order")
                 return "Alphabetical order"
             if select_sort == "Alphabetical order":
-                View.add_menu_line("For rank order")
+                View.add_menu_line("rank order")
                 return "Rank order"
             if select_sort == "Rank order":
-                View.add_menu_line("For id order")
-                return "Id order"
+                View.add_menu_line("Number order")
+                return "Number order"
         if type_table == 'tournament_player_table':
             if select_sort == "Alphabetical order":
-                View.add_menu_line("For tournament points order")
+                View.add_menu_line("tournament points order")
             if select_sort == "Tournament points order":
-                View.add_menu_line("For rank order")
+                View.add_menu_line("Rank order")
             if select_sort == "Rank order":
-                View.add_menu_line("For Alphabetical order")
+                View.add_menu_line("Alphabetical order")
 
     @classmethod
     def table_sort_select(cls, type_table, select_sort):
         """Method that returns
         the sort mode for arrays"""
         if type_table == 'player_table':
-            if select_sort == "Id order":
+            if select_sort == "Number order":
                 return "Alphabetical order"
             if select_sort == "Alphabetical order":
                 return "Rank order"
             if select_sort == "Rank order":
-                return "Id order"
+                return "Number order"
         if type_table == 'tournament_player_table':
             if select_sort == "Alphabetical order":
                 return "Tournament points order"

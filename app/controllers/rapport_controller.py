@@ -26,7 +26,7 @@ class RapportController:
             TableService.table(
                                 title="Tournaments",
                                 columns=[
-                                        'id',
+                                        'number',
                                         'name',
                                         'location',
                                         'date',

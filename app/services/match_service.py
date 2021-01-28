@@ -17,14 +17,14 @@ class MatchService:
             player_1 = GetModelService.get_model('PlayerModel', matchs[0][0])
             player_2 = GetModelService.get_model('PlayerModel', matchs[1][0])
             match_list_table.append(
-                                {
-                                    'id': match_nb,
-                                    'player1': str(player_1.id) + '_' + player_1.first_name + ' ' + player_1.last_name,
-                                    'score1': matchs[0][1],
-                                    'player2': str(player_2.id) + '_' + player_2.first_name + ' ' + player_2.last_name,
-                                    'score2': matchs[1][1]
-                                }
-                                )
+                            {
+                                'number': match_nb,
+                                'player1': str(player_1.number) + '_' + player_1.first_name + ' ' + player_1.last_name,
+                                'score1': matchs[0][1],
+                                'player2': str(player_2.number) + '_' + player_2.first_name + ' ' + player_2.last_name,
+                                'score2': matchs[1][1]
+                            }
+            )   
             match_nb += 1
         return match_list_table
 
@@ -32,8 +32,8 @@ class MatchService:
     def create_matchs(cls, tournament, rounds):
         """Method to create matches for a round"""
         p_match = TournamentService.tournament_players_list(tournament)
-        t_players_id = GetModelService.get_models_id(p_match)
         p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
+        t_players_id = GetModelService.get_models_id(p_match)
         for player in p_match:
             player.no_vs = []
             for id_player in t_players_id:
@@ -61,7 +61,7 @@ class MatchService:
                 player_1 = p_match[pos_player]
                 del p_match[pos_player]
                 for player_model in p_match:
-                    try:
+                    try:     
                         if player_model.id == player_1.no_vs[pos_player]:
                             player_2 = player_model
                             p_match.remove(player_model)
@@ -93,13 +93,14 @@ class MatchService:
                     rounds.matchs_list.append(match)
                 if len(rounds.matchs_list) > int(tournament.nb_players/2):
                     p_match = TournamentService.tournament_players_list(tournament)
+                    p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
                     for player in p_match:
                         while len(player.vs) >= rounds.count:
                             del player.vs[-1]
                             player.update('vs', player.vs)
                     rounds.matchs_list = []
                     rounds.update('matchs_list', rounds.matchs_list)
-                    pos_player += 1
+                    pos_player = +1
                     continue
                 else:
                     rounds.update('matchs_list', rounds.matchs_list)

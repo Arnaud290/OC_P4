@@ -11,7 +11,7 @@ class ManagePlayerController:
     """Manage player control class"""
     def __call__(self):
         self.control = None
-        self.tab_sort = "Id order"
+        self.tab_sort = "Number order"
         self.manage_player_menu()
 
     def manage_player_menu(self):
@@ -23,7 +23,7 @@ class ManagePlayerController:
             View.add_title_menu("MANAGE PLAYERS")
             TableService.table(
                                 title=self.tab_sort,
-                                columns=['id', 'first_name', 'last_name', 'birth_date', 'sex', 'rank'],
+                                columns=['number', 'first_name', 'last_name', 'birth_date', 'sex', 'rank'],
                                 table=GetModelService.get_serialized('PlayerModel'),
                                 select_sort=self.tab_sort
                             )

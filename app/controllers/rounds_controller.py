@@ -47,7 +47,7 @@ class RoundsController:
             View.add_title_menu(title_menu)
             TableService.table(
                                 title='Results',
-                                columns=['id', 'first_name', 'last_name', 'tournament_points', 'rank'],
+                                columns=['number', 'first_name', 'last_name', 'tournament_points', 'rank'],
                                 table=TournamentService.tournament_results_table(self.tournament),
                                 select_sort='tournament_points'
                                 )
@@ -83,7 +83,7 @@ class RoundsController:
                 self.rounds.update('date_start', self.rounds.date_start)
             else:
                 choice = TestService.test_num(
-                                                title="Enter match id: ",
+                                                title="Enter match number: ",
                                                 modif_num=-1,
                                                 test_range_element=len(self.rounds.matchs_list),
                                                 test_not_element=self.rounds.finish_matchs,
