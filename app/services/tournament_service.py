@@ -237,7 +237,6 @@ class TournamentService:
         of rounds of a tournament"""
         rounds_models_list = []
         tab_list = []
-        rounds_list = GetModelService.get_model('RoundModel')
         for rounds in tournament.round_list:
             rounds_models_list.append(GetModelService.get_model('RoundModel', rounds))
             tab_list.append(GetModelService.get_serialized('RoundModel', rounds))

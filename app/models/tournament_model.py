@@ -8,7 +8,7 @@ class TournamentModel(Model):
     """Tournament model class"""
     def __init__(self, **attributs):
         self.id = services.get_model_service.GetModelService.get_number('TournamentModel')
-        self.number = self.id + 1 
+        self.number = self.id + 1
         self.name = None
         self.location = None
         self.date = time.strftime("%d/%m/%Y")

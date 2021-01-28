@@ -24,7 +24,7 @@ class MatchService:
                                 'player2': str(player_2.number) + '_' + player_2.first_name + ' ' + player_2.last_name,
                                 'score2': matchs[1][1]
                             }
-            )   
+            )
             match_nb += 1
         return match_list_table
 
@@ -61,7 +61,7 @@ class MatchService:
                 player_1 = p_match[pos_player]
                 del p_match[pos_player]
                 for player_model in p_match:
-                    try:     
+                    try:
                         if player_model.id == player_1.no_vs[pos_player]:
                             player_2 = player_model
                             p_match.remove(player_model)
@@ -100,7 +100,7 @@ class MatchService:
                             player.update('vs', player.vs)
                     rounds.matchs_list = []
                     rounds.update('matchs_list', rounds.matchs_list)
-                    pos_player = +1
+                    pos_player += 1
                     continue
                 else:
                     rounds.update('matchs_list', rounds.matchs_list)

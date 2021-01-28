@@ -29,7 +29,6 @@ class PlayerService:
     @classmethod
     def modify_player(cls, players_model_list):
         """Manage player method"""
-        #players_id = GetModelService.get_models_id(players_model_list)
         player_id = TestService.test_num(
                                             title="Enter player number",
                                             test_range_element=len(players_model_list),

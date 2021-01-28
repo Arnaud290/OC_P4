@@ -22,7 +22,8 @@ class RoundService:
         TableService.table(
                             title="Tournament Players",
                             columns=['tournament_points', 'rank', 'first_name', 'last_name', 'number'],
-                            table=tab_t_players
+                            table=tab_t_players,
+                            select_sort='tournament_points'
                         )
         TableService.table(
                             title="Round {}".format(rounds.count),
