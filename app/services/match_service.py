@@ -40,7 +40,7 @@ class MatchService:
                 if player.id != id_player and id_player not in player.vs:
                     player.no_vs.append(id_player)
             player.update('no_vs', player.no_vs)
-        if rounds.count == 1:
+        if rounds['count'] == 1:
             while p_match:
                 middle = int(len(p_match)/2)
                 player_1 = p_match[0]
@@ -50,10 +50,9 @@ class MatchService:
                 player_2.vs.append(player_1.id)
                 player_2.update('vs', player_2.vs)
                 match = ([player_1.id, 0], [player_2.id, 0])
-                rounds.matchs_list.append(match)
+                rounds['matchs_list'].append(match)
                 del p_match[middle]
                 del p_match[0]
-            rounds.update('matchs_list', rounds.matchs_list)
         else:
             pos_player = 0
             while True:
@@ -76,7 +75,7 @@ class MatchService:
                 player_2.vs.append(player_1.id)
                 player_2.update('vs', player_2.vs)
                 match = ([player_1.id, 0], [player_2.id, 0])
-                rounds.matchs_list.append(match)
+                rounds['matchs_list'].append(match)
                 while p_match:
                     player_1 = p_match[0]
                     del p_match[0]
@@ -90,20 +89,18 @@ class MatchService:
                     player_2.vs.append(player_1.id)
                     player_2.update('vs', player_2.vs)
                     match = ([player_1.id, 0], [player_2.id, 0])
-                    rounds.matchs_list.append(match)
-                if len(rounds.matchs_list) > int(tournament.nb_players/2):
+                    rounds['matchs_list'].append(match)
+                if len(rounds['matchs_list']) > int(tournament.nb_players/2):
                     p_match = TournamentService.tournament_players_list(tournament)
                     p_match.sort(key=operator.attrgetter('tournament_points', 'rank'), reverse=True)
                     for player in p_match:
-                        while len(player.vs) >= rounds.count:
+                        while len(player.vs) >= rounds['count']:
                             del player.vs[-1]
                             player.update('vs', player.vs)
-                    rounds.matchs_list = []
-                    rounds.update('matchs_list', rounds.matchs_list)
+                    rounds['matchs_list'] = []
                     pos_player += 1
                     continue
                 else:
-                    rounds.update('matchs_list', rounds.matchs_list)
                     break
 
     @classmethod
@@ -111,37 +108,37 @@ class MatchService:
         """Method of managing a match during results"""
         tournament_players = TournamentService.tournament_players_list(tournament)
         if result_select == '1':
-            rounds.matchs_list[match_select][0][1] += 1
+            rounds['matchs_list'][match_select][0][1] += 1
             for player in tournament_players:
-                if player.id == rounds.matchs_list[match_select][0][0]:
+                if player.id == rounds['matchs_list'][match_select][0][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
         if result_select == '2':
-            rounds.matchs_list[match_select][1][1] += 1
+            rounds['matchs_list'][match_select][1][1] += 1
             for player in tournament_players:
-                if player.id == rounds.matchs_list[match_select][1][0]:
+                if player.id == rounds['matchs_list'][match_select][1][0]:
                     player.tournament_points += 1
                     player.update('tournament_points', player.tournament_points)
         if result_select == '3':
-            rounds.matchs_list[match_select][0][1] += 0.5
-            rounds.matchs_list[match_select][1][1] += 0.5
+            rounds['matchs_list'][match_select][0][1] += 0.5
+            rounds['matchs_list'][match_select][1][1] += 0.5
             for player in tournament_players:
-                if player.id == rounds.matchs_list[match_select][0][0]:
+                if player.id == rounds['matchs_list'][match_select][0][0]:
                     player.tournament_points += 0.5
                     player.update('tournament_points', player.tournament_points)
             for player in tournament_players:
-                if player.id == rounds.matchs_list[match_select][1][0]:
+                if player.id == rounds['matchs_list'][match_select][1][0]:
                     player.tournament_points += 0.5
                     player.update('tournament_points', player.tournament_points)
-        rounds.update('matchs_list', rounds.matchs_list)
-        rounds.finish_matchs.append(match_select)
-        rounds.update('finish_matchs', rounds.finish_matchs)
-        if len(rounds.finish_matchs) == int(tournament.nb_players/2):
-            rounds.start = False
-            rounds.update('start', rounds.start)
-            rounds.finish = True
-            rounds.update('finish', rounds.finish)
-            rounds.date_finish = time.strftime("%d/%m/%Y %H:%M:%S")
-            rounds.update('date_finish', rounds.date_finish)
+        tournament.update('round_list', tournament.round_list)
+        rounds['finish_matchs'].append(match_select)
+        tournament.update('round_list', tournament.round_list)
+        if len(rounds['finish_matchs']) == int(tournament.nb_players/2):
+            rounds['start'] = False
+            tournament.update('round_list', tournament.round_list)
+            rounds['finish'] = True
+            tournament.update('round_list', tournament.round_list)
+            rounds['date_finish'] = time.strftime("%d/%m/%Y %H:%M:%S")
+            tournament.update('round_list', tournament.round_list)
             tournament.tab_results = TournamentService.tournament_results_table(tournament)
             tournament.update('results', tournament.tab_results)

@@ -21,15 +21,6 @@ class TournamentService:
         return t_players
 
     @classmethod
-    def tournament_rounds_list(cls, tournament):
-        """method that returns the list of
-        rounds of players in a tournament"""
-        rounds = []
-        for id_round in tournament.round_list:
-            rounds.append(GetModelService.get_model('RoundModel', id_round))
-        return rounds
-
-    @classmethod
     def tournament_results_table(cls, tournament):
         """Table creation method for tournament results"""
         t_players = cls.tournament_players_list(tournament)
@@ -235,11 +226,6 @@ class TournamentService:
     def table_of_tournament_rounds(cls, tournament):
         """Method to create a table
         of rounds of a tournament"""
-        rounds_models_list = []
-        tab_list = []
-        for rounds in tournament.round_list:
-            rounds_models_list.append(GetModelService.get_model('RoundModel', rounds))
-            tab_list.append(GetModelService.get_serialized('RoundModel', rounds))
         match_tab_title = None
         match_tab_list = []
         while True:
@@ -247,7 +233,7 @@ class TournamentService:
             TableService.table(
                                 title="Rounds list",
                                 columns=['name', 'date_start', 'date_finish'],
-                                table=tab_list,
+                                table=tournament.round_list,
                                 select_sort='Round_name'
                             )
             TableService.table(
@@ -268,7 +254,7 @@ class TournamentService:
                                             )
                 if choice is None:
                     continue
-                match_tab_title = rounds_models_list[choice].name
-                match_tab_list = match_service.MatchService.match_table(rounds_models_list[choice].matchs_list)
+                match_tab_title = tournament.round_list[choice]['name']
+                match_tab_list = match_service.MatchService.match_table(tournament.round_list[choice]['matchs_list'])
             if choice == '2':
                 break

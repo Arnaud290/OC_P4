@@ -26,9 +26,9 @@ class RoundService:
                             select_sort='tournament_points'
                         )
         TableService.table(
-                            title="Round {}".format(rounds.count),
+                            title=rounds['name'],
                             columns=['number', 'player1', 'score1', 'player2', 'score2'],
-                            table=match_service.MatchService.match_table(rounds.matchs_list)
+                            table=match_service.MatchService.match_table(rounds['matchs_list'])
                         )
 
     @classmethod
@@ -37,11 +37,9 @@ class RoundService:
         rounds_nb = 1
         for nb_rounds in range(tournament.nb_rounds):
             round_game = RoundModel()
-            round_game.id_tourament = tournament.id
             round_game.count = rounds_nb
             round_game.name = 'Round ' + str(rounds_nb)
-            tournament.round_list.append(round_game.id)
-            round_game.save()
+            tournament.round_list.append(round_game.__dict__)
             rounds_nb += 1
         tournament.in_progress = True
         tournament.update('in_progress', tournament.in_progress)
